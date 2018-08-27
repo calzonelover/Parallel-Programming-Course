@@ -11,14 +11,13 @@ int main(int argc, char const *argv[])
   float dy = (y_f - y_i)/n_y;
   int k;
   Complex z_prev;
-  
   start = clock();
   for (unsigned int i=0; i<n_x; i++){
     for (unsigned int j=0; j<n_y; j++){
       z.x = z.y = 0.0;
       k = 0;
-      c.x = dx*i + x_i;
-      c.y = dy*j + y_i;
+      c.x = dx*j + x_i;
+      c.y = dy*i + y_i;
       do {
         z_prev.x = z.x;
         z_prev.y = z.y;
@@ -34,8 +33,6 @@ int main(int argc, char const *argv[])
       data[i][j] = k;
     }
   }
-  end = clock();
-  printf("CPU time = %lf\n", (double) (end - start)/ CLOCKS_PER_SEC );
 
   file = fopen("mandel.ppm", "w");
   fprintf(file, "P2 %d %d 16\n", n_x, n_y);
@@ -47,5 +44,9 @@ int main(int argc, char const *argv[])
   }
   fprintf(file, "\n");
   fclose(file);
+
+  end = clock();
+  printf("CPU time = %lf\n", (double) (end - start)/ CLOCKS_PER_SEC );
+
 
 }

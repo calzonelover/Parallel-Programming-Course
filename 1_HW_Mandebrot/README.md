@@ -13,6 +13,9 @@
 5. write ".ppm" file and let convert to jpg
 
 ## Result
-* CPU Time: .. ms 
-* GPU Time: .. ms
-* Note that hardware dependency that we use is CPU ... : and GPU : ...
+* CPU Time: 12.250193 ms 
+* GPU Time: 6.304879  ms
+* Dependency
+	* CPU : Intel(R) Core(TM) i5-2400 CPU @ 3.10GHz
+	* GPU : GeForce GT 1030 
+	* CUDA version 9.0
