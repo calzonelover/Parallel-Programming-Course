@@ -9,12 +9,11 @@
 #include <time.h>
 
 #include "wave2d.h"
-#define dt 0.035
 
 int main() {
   float dx = xmax/(nx-1);
-  float C = v*dx/dt;
-  float C2 = C*C;
+  C = v*dt/dx;
+  C2 = C*C;
   size = nx*ny*sizeof(float);
   u0 = (float*) malloc(size);
   u1 = (float*) malloc(size);
@@ -54,7 +53,7 @@ int main() {
   printf("CPU time = %lf s\n", cpu_time);
 
   // output the final snapshot
-  FILE *file = fopen("u.dat","w");
+  FILE *file = fopen("uCPU.dat","w");
   fwrite(u2, sizeof(float), nx*ny, file);
   fclose(file);
 
