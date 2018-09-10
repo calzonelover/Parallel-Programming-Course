@@ -7,7 +7,6 @@
 #define HB 320
 #define MAX_ITER 10
 
-size_t size;
 clock_t start, stop;
 float *A, *B, *C;
 

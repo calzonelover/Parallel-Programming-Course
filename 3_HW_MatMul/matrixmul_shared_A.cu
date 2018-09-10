@@ -8,7 +8,7 @@
 #define BLOCK_SIZE 32
 
 __global__ void matmul(float *_A, float *_B, float *_C);
-__device__ void strideslide()
+__device__ void strideslide(float *_M);
 
 int main(){
 	float *hA, *hB, *hC;
@@ -86,6 +86,10 @@ void printMatrix(float *_M, int _W, int _H){
 		}
 		printf("|\n");
 	}
+}
+
+__device__ void strideslide(float *_M){
+	
 }
 
 __global__ void matmul(float *_A, float *_B, float *_C){
