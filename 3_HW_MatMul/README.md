@@ -2,7 +2,7 @@
 ## Matrix multiplication 
 * For a given matrices A and B with dimension (WA, HA) (WB, HB) sequentially
 * The product from multiplication C would has dimension (WB, HA)
-* <img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
+* This relation can be written as <img src="https://latex.codecogs.com/svg.latex?\Large&space;C_{i,j} = \sum_{dummy}^{WA \equiv HB} A_{dummy,j}\cdot B_{i,dummy}" />
 
 ## Methods
 * Pure cutomize function (CPU)
