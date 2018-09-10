@@ -5,6 +5,7 @@
 #define HA 320
 #define WB 640
 #define HB 320
+#define MAX_ITER 10
 
 size_t size;
 clock_t start, stop;

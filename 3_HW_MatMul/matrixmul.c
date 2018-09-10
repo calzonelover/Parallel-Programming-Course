@@ -17,9 +17,10 @@ int main(){
 	initMatrix(A, WA, HA);
 	initMatrix(B, WB, HB);
 	start = clock();
-	matmul(A, B, C);
+	for (unsigned int iter = 0; iter < MAX_ITER ; iter++)
+		matmul(A, B, C);
 	stop = clock();
-	double cpu_time = (double) (stop-start) / CLOCKS_PER_SEC;
+	double cpu_time = (double) (stop-start) / CLOCKS_PER_SEC / MAX_ITER;
 	printf("CPU time = %lf s\n", cpu_time);
 	// printf("Matrix A =\n");
 	// printMatrix(A, WA, HA);
@@ -43,13 +44,13 @@ void initMatrix(float *_M, int _W, int _H){
 
 void matmul(float *_A, float *_B, float *_C){
 	if (WA == HB){
-		for (unsigned int i=0; i<HA;i++){
-			for (unsigned int j=0; j<WB; j++){
+		for (unsigned int j=0; j<HA;j++){
+			for (unsigned int i=0; i<WB; i++){
 				float sumover = 0.0f;
 				for (unsigned int dmmy=0; dmmy<HB; dmmy++){
-					sumover += _A[dmmy+i*WA]*_B[j+dmmy*WB]; // Have to swop
+					sumover += _A[dmmy+j*WA]*_B[i+dmmy*WB]; // Have to swop
 				}
-				_C[j+i*WB] = sumover;
+				_C[i+j*WB] = sumover;
 			}
 		}
 	} else {

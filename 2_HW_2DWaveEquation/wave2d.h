@@ -1,5 +1,5 @@
 #ifndef WAVE2D
-#define WAVE2d
+#define WAVE2D
 
 #define xmax 1.0
 #define ymax 1.0
