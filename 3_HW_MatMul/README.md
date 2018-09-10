@@ -2,7 +2,7 @@
 ## Matrix multiplication 
 * For a given matrices A and B with dimension (WA, HA) (WB, HB) sequentially
 * The product from multiplication C would has dimension (WB, HA)
-* This relation can be written as <img src="https://latex.codecogs.com/svg.latex?\Large&space;C_{i,j} = \sum_{dummy}^{WA \equiv HB} A_{dummy,j}\cdot B_{i,dummy}" />
+* This relation can be written as <img src="https://latex.codecogs.com/svg.latex?\Large&space;C_{i,j} = \sum_{d}^{\text{WA}\equiv \text{HB}} A_{d,j}\cdot B_{i,d}" />
 
 ## Methods
 * Pure cutomize function (CPU)
