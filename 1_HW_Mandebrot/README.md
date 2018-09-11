@@ -19,3 +19,8 @@
 	* CPU : Intel(R) Core(TM) i5-2400 CPU @ 3.10GHz
 	* GPU : GeForce GT 1030 
 	* CUDA version 9.0
+
+## 2D Map
+<p align="center">
+<img src="mandel.jpg" width="500px" >
+</p>
