@@ -21,8 +21,8 @@
 * Customize C : 0.272511 s
 * Customize CUDA kernel 
 	* Ordinary Kernel : 0.003077 s
-	* Shared memory of matrix A : 
-	* Shared memory of matrix A and B : 
+	* Shared memory of matrix A : 0.000184 s ?
+	* Shared memory of matrix A and B : 0.000119 s ?
 * CUBLAS : 
 
 ### GFLOPS
