@@ -92,6 +92,7 @@ __device__ void strideslide(float *_M){
 	
 }
 
+
 __global__ void matmul(float *_A, float *_B, float *_C){
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	int j = threadIdx.y + blockIdx.y*blockDim.y;
