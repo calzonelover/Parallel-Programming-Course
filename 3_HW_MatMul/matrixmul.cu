@@ -6,7 +6,6 @@
 #include "matrixmul.h"
 
 #define BLOCK_SIZE 32
-
 __global__ void matmul(float *_A, float *_B, float *_C);
 
 
@@ -73,7 +72,7 @@ void initMatrix(float *_M, int _W, int _H){
 	srand(time(NULL));
 	for (unsigned int h=0; h<_H;h++){
 		for (unsigned int w=0; w<_W; w++){
-			_M[w+h*WA] = (float)rand()/ (float)RAND_MAX;//(int)rand() % 16;
+			_M[w+h*_W] = (float)rand()/ (float)RAND_MAX;//(int)rand() % 16;
 		}
 	}
 }

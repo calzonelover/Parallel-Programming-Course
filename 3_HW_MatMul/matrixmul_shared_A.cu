@@ -6,9 +6,9 @@
 #include "matrixmul.h"
 
 #define BLOCK_SIZE 32
+#define STRIDE_SIZE 32
 
 __global__ void matmul(float *_A, float *_B, float *_C);
-__device__ void strideslide(float *_M);
 
 int main(){
 	float *hA, *hB, *hC;
@@ -73,7 +73,7 @@ void initMatrix(float *_M, int _W, int _H){
 	srand(time(NULL));
 	for (unsigned int h=0; h<_H;h++){
 		for (unsigned int w=0; w<_W; w++){
-			_M[w+h*WA] = (float)rand()/ (float)RAND_MAX;//(int)rand() % 16;
+			_M[w+h*_W] = (int)rand() % 16;//(float)rand()/ (float)RAND_MAX;
 		}
 	}
 }
@@ -88,19 +88,17 @@ void printMatrix(float *_M, int _W, int _H){
 	}
 }
 
-__device__ void strideslide(float *_M){
-	
-}
-
 
 __global__ void matmul(float *_A, float *_B, float *_C){
-	int i = threadIdx.x + blockIdx.x*blockDim.x;
-	int j = threadIdx.y + blockIdx.y*blockDim.y;
+	__shared__ float _Asub[STRIDE_SIZE][STRIDE_SIZE];
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	if (i < WB && j < HA){
-		float sumover = .0f;
-		for (unsigned int dmmy = 0; dmmy< HB; dmmy++){
-			sumover += _A[dmmy+j*WA]*_B[i+dmmy*WB];
+		_Asub[threadIdx.y][threadIdx.x] = _A[j*STRIDE_SIZE+threadIdx.x];
+		float sumoverpad = 0.0f;
+		for (unsigned int dmmy = 0; dmmy < STRIDE_SIZE; dmmy++){
+			sumoverpad += _Asub[threadIdx.y][dmmy]*_B[i+dmmy*WB];
 		}
-		_C[i+j*WB] = sumover;
+		_C[i+j*WB] = sumoverpad;
 	}
 }
