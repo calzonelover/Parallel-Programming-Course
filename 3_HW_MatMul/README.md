@@ -7,23 +7,21 @@
 * Note that all matrix elements is all float number with dimension
 	* (WA, HA) = (320, 320)
 	* (WB, HB) = (640, 320)
-	* Which cause (WC, HC) = (WB, HA)
+	* Which cause (WC, HC) = (WB, HA) => there are 640*320*320=65,536,000 floating point operation
 * 10 times iteration of calculation for more precise time elapsed due to we use a small matrix size
 * Notice that dimension matching of matrices for multiplication have to have WA = HB and it also already take into account for checking process before calculation in this code
 
 ## Methods
 * Pure cutomize function (CPU)
 * Customize kernel CUDA (GPU) for unshared memory and shared memory method for both of input matrices
-* Libraly CUBLAS (GPU)
 
 ## Results
 ### Timing
 * Customize C : 0.272511 s
 * Customize CUDA kernel 
-	* Ordinary Kernel : 0.003077 s
-	* Shared memory of matrix A : 0.000184 s ?
-	* Shared memory of matrix A and B : 0.000119 s ?
-* CUBLAS : 
+	* Ordinary Kernel : 0.003247 s
+	* Shared memory of matrix A : 0.000220 s
+	* Shared memory of matrix A and B : 0.000132 s
 
 ### GFLOPS
 * Customize C : 
@@ -31,7 +29,6 @@
 	* Ordinary Kernel :
 	* Shared memory of matrix A :
 	* Shared memory of matrix A and B :
-* CUBLAS : 
 
 ## Dependency
 * Ubuntu 16.04

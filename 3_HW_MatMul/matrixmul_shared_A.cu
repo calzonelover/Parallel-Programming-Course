@@ -2,13 +2,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <iostream>
 
 #include "matrixmul.h"
 
 #define BLOCK_SIZE 32
 #define STRIDE_SIZE 32
 
+void checkValidation(float *_A, float *_B, float *_C);
 __global__ void matmul(float *_A, float *_B, float *_C);
+
 
 int main(){
 	float *hA, *hB, *hC;
@@ -54,6 +57,7 @@ int main(){
 	cudaMemcpy(hA, A, WA*HA*sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(hB, B, WB*HB*sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(hC, C, WB*HA*sizeof(float), cudaMemcpyDeviceToHost);
+	checkValidation(hA, hB, hC);
 	// printf("Matrix A =\n");
 	// printMatrix(hA, WA, HA);
 	// printf("Matrix B =\n");
@@ -73,7 +77,7 @@ void initMatrix(float *_M, int _W, int _H){
 	srand(time(NULL));
 	for (unsigned int h=0; h<_H;h++){
 		for (unsigned int w=0; w<_W; w++){
-			_M[w+h*_W] = (int)rand() % 16;//(float)rand()/ (float)RAND_MAX;
+			_M[w+h*_W] = (float)rand()/ (float)RAND_MAX;
 		}
 	}
 }
@@ -95,10 +99,31 @@ __global__ void matmul(float *_A, float *_B, float *_C){
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	if (i < WB && j < HA){
 		_Asub[threadIdx.y][threadIdx.x] = _A[j*STRIDE_SIZE+threadIdx.x];
+		__syncthreads();
 		float sumoverpad = 0.0f;
 		for (unsigned int dmmy = 0; dmmy < STRIDE_SIZE; dmmy++){
 			sumoverpad += _Asub[threadIdx.y][dmmy]*_B[i+dmmy*WB];
 		}
 		_C[i+j*WB] = sumoverpad;
+	}
+	__syncthreads();
+}
+
+void checkValidation(float *_A, float *_B, float *_C){
+	try{
+		for (unsigned int j=0; j<HA;j++){
+			for (unsigned int i=0; i<WB; i++){
+				float C_cpu_ij = 0.0f;
+				for (unsigned int dmmy=0; dmmy<HB; dmmy++){
+					C_cpu_ij += _A[dmmy+j*WA]*_B[i+dmmy*WB]; // Have to swop
+				}
+				if (_C[i+j*WB] - C_cpu_ij > 0.001f){
+					throw "Wrong";
+				}
+			}
+		}
+		std::cout << "The matrix is right" << std::endl;
+	} catch (const char* msg) {
+		std::cerr << msg << std::endl;
 	}
 }
