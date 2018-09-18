@@ -10,6 +10,8 @@
 #define a 1000.0
 #define dt 0.035
 
+#define MAX_ITER 10
+
 size_t size;
 clock_t start, stop;
 

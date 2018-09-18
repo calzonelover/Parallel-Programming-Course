@@ -15,23 +15,40 @@
 * Pure cutomize function (CPU)
 * Customize kernel CUDA (GPU) for unshared memory and shared memory method for both of input matrices
 
+## FLOPs evaluation
+* FLOPs calculation : cores * clockFrequency * 1/T  * (FLOPs/cycle)
+
 ## Results
 ### Timing
+#### Matrix multiplication
 * Customize C : 0.272511 s
 * Customize CUDA kernel 
 	* Ordinary Kernel : 0.003247 s
-	* Shared memory of matrix A : 0.000220 s
-	* Shared memory of matrix A and B : 0.000132 s
+	* Shared memory of matrix A : 0.000205 s
+	* Shared memory of matrix A and B : 0.000126 s
+#### Wave2D
+* Ordinary Kernel :  s
+* Kernel with shared : s
 
 ### GFLOPS
+#### Matrix multiplication
 * Customize C : 
 * Customize CUDA kernel 
-	* Ordinary Kernel :
+	* Ordinary Kernel : 
 	* Shared memory of matrix A :
 	* Shared memory of matrix A and B :
+#### Wave2D
+* Ordinary Kernel :  
+* Kernel with shared : 
+
+
 
 ## Dependency
 * Ubuntu 16.04
-* CPU : Intel(R) Core(TM) i5-2400 CPU @ 3.10GHz
+* CPU : Intel(R) Core(TM) i5-2400
+	* 3.1 Ghz
+	* 4 Cores
 * GPU : GeForce GT 1030 
+	* 384 CUDA cores
+	* 1.38 GHz
 * CUDA version 9.0

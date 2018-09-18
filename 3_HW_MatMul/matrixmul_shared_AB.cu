@@ -106,7 +106,6 @@ __global__ void matmul(float *_A, float *_B, float *_C){
 		}
 		_C[i+j*WB] = sumoverpad;
 	}
-	__syncthreads();
 }
 
 void checkValidation(float *_A, float *_B, float *_C){
@@ -117,7 +116,7 @@ void checkValidation(float *_A, float *_B, float *_C){
 				for (unsigned int dmmy=0; dmmy<HB; dmmy++){
 					C_cpu_ij += _A[dmmy+j*WA]*_B[i+dmmy*WB]; // Have to swop
 				}
-				if (_C[i+j*WB] - C_cpu_ij > 0.001f){
+				if (_C[i+j*WB] - C_cpu_ij > 0.001f && _C[i+j*WB] - C_cpu_ij < 0.001f  ){
 					throw "Wrong";
 				}
 			}
