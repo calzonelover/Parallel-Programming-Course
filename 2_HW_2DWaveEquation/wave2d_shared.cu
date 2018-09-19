@@ -42,7 +42,7 @@ int main(){
   for (unsigned int it_time=0; it_time<MAX_ITER; it_time++){
     for (unsigned int it=0; it<nt; it++) {
       fd<<<G,B>>>(u0, u1, u2, C2);
-      update<<<G,B>>>(u0, u1, u2);
+      //update<<<G,B>>>(u0, u1, u2);
     }
   }
   cudaEventRecord(stop, 0);
@@ -81,10 +81,13 @@ __global__ void fd(float *u0, float *u1, float *u2, float C2){
     u2[indx] = (2.0f-4.0f*C2)*_u1[ix][iy] - _u0[ix][iy]
               + C2*(_u1[ix+1][iy]+_u1[ix-1][iy]
               + _u1[ix][iy+1]+_u1[ix][iy-1]);
+  __syncthreads();
+  _u0[ix][iy] = _u1[ix][iy];
+  _u1[ix][iy] = u2[indx];
 }
 
 
-__global__ void update(float *u0, float *u1, float *u2){
+/*__global__ void update(float *u0, float *u1, float *u2){
   int ix = threadIdx.x + blockIdx.x*blockDim.x;
   int iy = threadIdx.y + blockIdx.y*blockDim.y;
   if (ix > 0 && iy > 0 && ix < nx-1 && iy < ny-1){
@@ -92,7 +95,7 @@ __global__ void update(float *u0, float *u1, float *u2){
    u0[indx] = u1[indx];
    u1[indx] = u2[indx];
   }
-}
+}*/
 
 
 

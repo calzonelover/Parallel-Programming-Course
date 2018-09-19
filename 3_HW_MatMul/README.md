@@ -16,27 +16,27 @@
 * Customize kernel CUDA (GPU) for unshared memory and shared memory method for both of input matrices
 
 ## FLOPs evaluation
-* FLOPs calculation : cores * clockFrequency * 1/T  * (FLOPs/cycle)
+* FLOPs = FLOP / Time_execution
 
 ## Results
 ### Timing
 #### Matrix multiplication
-* Customize C : 0.272511 s
+* Customize C : 0.272 s
 * Customize CUDA kernel 
-	* Ordinary Kernel : 0.003247 s
+	* Ordinary Kernel : 0.00325 s
 	* Shared memory of matrix A : 0.000205 s
 	* Shared memory of matrix A and B : 0.000126 s
 #### Wave2D
-* Ordinary Kernel :  s
-* Kernel with shared : s
+* Ordinary Kernel :  
+* Kernel with shared : 
 
 ### GFLOPS
 #### Matrix multiplication
-* Customize C : 
+* Customize C : 0.24 GFLOPs
 * Customize CUDA kernel 
-	* Ordinary Kernel : 
-	* Shared memory of matrix A :
-	* Shared memory of matrix A and B :
+	* Ordinary Kernel : 20.2 GFLOPs
+	* Shared memory of matrix A : 319.7 GFLOPs
+	* Shared memory of matrix A and B : 520.1 GFLOPs
 #### Wave2D
 * Ordinary Kernel :  
 * Kernel with shared : 
@@ -49,6 +49,6 @@
 	* 3.1 Ghz
 	* 4 Cores
 * GPU : GeForce GT 1030 
-	* 384 CUDA cores
 	* 1.38 GHz
+	* 384 CUDA cores
 * CUDA version 9.0
