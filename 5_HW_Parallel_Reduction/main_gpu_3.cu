@@ -15,7 +15,7 @@ void initValue(int *_arr);
 int cpuSumArray(int *_arr);
 
 template <class T>
-__global__ void sumArray(T *_arr, T *_oarr);
+__global__ void sumArray(T *_arr, T *d_oarr);
 
 
 
@@ -24,12 +24,10 @@ int main (int argc, char *argv[]) {
 	int true_sum;
 	int *d_arr, *d_oarr;
 	cudaEvent_t start_t, stop_t;
-//	int threads = (ARR_SIZE < BLOCK_SIZE) ? ARR_SIZE  : BLOCK_SIZE;
-	int blocks = ARR_SIZE/BLOCK_SIZE;
-	dim3 dimBlock(BLOCK_SIZE, 1, 1);
-	dim3 dimGrid(blocks, 1, 1);
 	size_t sizeArr = ARR_SIZE*sizeof(int);
-	size_t smSize = BLOCK_SIZE*sizeof(int);
+	size_t smemSize = BLOCK_SIZE*sizeof(int);
+	int gridSize = (ARR_SIZE + BLOCK_SIZE - 1) / BLOCK_SIZE;
+
 
 	cudaEventCreate(&start_t);
 	cudaEventCreate(&stop_t);
@@ -39,17 +37,12 @@ int main (int argc, char *argv[]) {
 
 	srand(time(NULL));
 	initValue(arr);
-
 	true_sum = cpuSumArray(arr);
-
 	cudaMemcpy(d_arr, arr, sizeArr, cudaMemcpyHostToDevice);
 
-	int subblocks = (blocks > 1) ? ARR_SIZE/BLOCK_SIZE + 1 : 0;
-	std::cout << subblocks << std::endl;
 	cudaEventRecord(start_t);
-	sumArray<<<dimGrid, dimBlock, smSize>>>(d_arr, d_oarr);
-	for (unsigned int dmmy=0; dmmy < subblocks; dmmy++){
-		sumArray<<<dimGrid, dimBlock, smSize>>>(d_oarr, d_oarr);
+	for (unsigned int dmmy=0; dmmy >= ITER_TIMES; dmmy++){
+		sumArray<<<gridSize, BLOCK_SIZE, smemSize>>>(d_arr, d_oarr);
 	}
 	cudaEventRecord(stop_t);
 	cudaEventSynchronize(stop_t);
@@ -100,13 +93,15 @@ template <class T>
 __global__ void sumArray(T *_arr, T *_oarr){
 	extern __shared__ T _sarr[];
 	unsigned int tid = threadIdx.x;
-	unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
-	_sarr[tid] = (i < ARR_SIZE) ? _arr[i]+_arr[i+blockDim.x] : 0;
+	unsigned int i = threadIdx.x + blockIdx.x*blockDim.x;
+	_sarr[tid] = (i < ARR_SIZE) ? _arr[i] : 0;
 	__syncthreads();
-    for (unsigned int stride = blockDim.x/2; stride > 0 ; stride >>= 1){
-	if (tid < stride)
-		_sarr[tid]+=_sarr[tid+stride];
-	__syncthreads();
-    }
+    for (unsigned int s=blockDim.x/2; s>0; s>>=1){
+        if (tid < s)
+        {
+            _sarr[tid] += _sarr[tid + s];
+        }
+		__syncthreads();
+	}
 	if (tid == 0) _oarr[blockIdx.x] = _sarr[0];
 }
