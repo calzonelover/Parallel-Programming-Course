@@ -6,7 +6,7 @@
 #include "main.h"
 
 
-#define BLOCK_SIZE 32
+#define BLOCK_SIZE 128
 
 
 void arrValidation(int _real_sum, int _sum);
@@ -24,7 +24,6 @@ int main (int argc, char *argv[]) {
 	int true_sum;
 	int *d_arr, *d_oarr;
 	cudaEvent_t start_t, stop_t;
-//	int threads = (ARR_SIZE < BLOCK_SIZE) ? ARR_SIZE  : BLOCK_SIZE;
 	int blocks = ARR_SIZE/BLOCK_SIZE;
 	dim3 dimBlock(BLOCK_SIZE, 1, 1);
 	dim3 dimGrid(blocks, 1, 1);
@@ -43,12 +42,10 @@ int main (int argc, char *argv[]) {
 	true_sum = cpuSumArray(arr);
 
 	cudaMemcpy(d_arr, arr, sizeArr, cudaMemcpyHostToDevice);
-
-	int subblocks = (blocks > 1) ? ARR_SIZE/BLOCK_SIZE + 1 : 0;
-	std::cout << subblocks << std::endl;
+	int workamount = (blocks > 1) ? ARR_SIZE/BLOCK_SIZE + 1 : 0;
 	cudaEventRecord(start_t);
 	sumArray<<<dimGrid, dimBlock, smSize>>>(d_arr, d_oarr);
-	for (unsigned int dmmy=0; dmmy < subblocks; dmmy++){
+	for (unsigned int dmmy=0; dmmy < workamount; dmmy++){
 		sumArray<<<dimGrid, dimBlock, smSize>>>(d_oarr, d_oarr);
 	}
 	cudaEventRecord(stop_t);
@@ -98,7 +95,7 @@ int cpuSumArray(int *_arr){
 
 template <class T>
 __global__ void sumArray(T *_arr, T *_oarr){
-	extern __shared__ T _sarr[];
+	__shared__ T _sarr[BLOCK_SIZE];
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
 	_sarr[tid] = (i < ARR_SIZE) ? _arr[i]+_arr[i+blockDim.x] : 0;
