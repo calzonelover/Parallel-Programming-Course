@@ -6,7 +6,6 @@
 
 
 void fillHistogram(int *_img, int *_vec_hist);
-void writeFile(int *_vec_hist );
 
 int main(){
 	img = (int*)malloc(WIDTH*HEIGHT*sizeof(int));
@@ -15,8 +14,9 @@ int main(){
 	readImg(img);
 	fillHistogram(img, vec_hist);
 	writeFile(vec_hist);
-	// std::cout << vec_hist[120] << std::endl;
 
+	free(img);
+	free(vec_hist);
 	return 0;
 }
 
@@ -27,7 +27,7 @@ void readImg(int *_img){
 			int x;
 			f_img >> x;
 			if (f_img.eof()) break;
-			img[i+j*WIDTH] = x;
+			_img[i+j*WIDTH] = x;
 		}
 	}
 	f_img.close();
