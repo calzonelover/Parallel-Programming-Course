@@ -1,4 +1,5 @@
-# HW 5 : Monotone 
+# HW 5 : Monotone
+# Mr. Patomporn Payoungkhamdee SCPY 6138171
 
 ## Histogram counting
 * Let consider a pure base 2 pixel images eg. 1024x1024 for numerical convenient at first
