@@ -12,7 +12,6 @@
 #define MAX_SOURCE_SIZE (0x100000)
 #define BLOCK_SIZE 32
 
-void loadKernelSource(char *_programSource);
 
 int main(){
 	size_t size_img = WIDTH*HEIGHT*sizeof(int);
@@ -27,15 +26,21 @@ int main(){
 
 	std::vector<cl::Platform> platforms;
 	std::vector<cl::Device> devices;
-	std::CommandQueue queue;
+	cl::CommandQueue queue;
 
 	cl::Buffer buf_img, buf_vec_hist;
-	cl::Program program;
-	cl::Kernel fillHistKernel;
 	/// Program ///
 	readImg(img);
+	for (unsigned int i=0; i<256;i++) {vec_hist[i]=0;}
+	// 1) setup
+	cl::Platform::get(&platforms);
+	platforms[0].getDevices(CL_DEVICE_TYPE_ALL, &devices);
+	cl::Context context(devices);
+	// create cmd queue
+	queue = cl::CommandQueue(context, devices[0]);
+	// 2) construct compilation
 	// load source
-	std::ifstream sourceFile("./kernel_fill_hist.cl");
+	std::ifstream sourceFile("kernel_fill_hist.cl");
 	std::string sourceCode(
 		std::istreambuf_iterator <char> (sourceFile),
 		(std::istreambuf_iterator <char> ())
@@ -45,28 +50,21 @@ int main(){
 		std::make_pair(sourceCode.c_str(),sourceCode.length()+1)
 	);
 	// end load source
-	// 1) setup
-	cl::Platform::get(&platforms);
-	platforms[0].getDevices(CL_DEVICE_TYPE_ALL, &devices);
-	std::Context context(devices);
-	// create cmd queue
-	queue = cl::CommandQueue(context, devices[0]);
-
-
-	// status = GetPlatformIDs(1, &platform, NULL);
-	status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &device, NULL);
-	context = clCreateContext(NULL, 1, &device, NULL, NULL, &status);
-	cmdQueue = clCreateCommandQueue(context, device, 0, &status);
-	// 2) construct compilation
-	program = cl::Program(context, source);
-	program.build(devices);
-	fillHistKernel(program, "fillHist");
+	cl::Program program = cl::Program(context, source);
+	try{
+		program.build(devices);
+	} catch (cl::Error error){
+		std::string log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
+		std::cout << log << std::endl;
+	}
+	exit(0);
+	cl::Kernel fillHistKernel(program, "fillHist");
 	// 3) create memory buffer
 	buf_img = cl::Buffer(context, CL_MEM_READ_ONLY, size_img);
 	buf_vec_hist = cl::Buffer(context, CL_MEM_READ_WRITE, size_hist);
 	// 4) copy host -> device
-	queue.EnqueueWriteBuffer(buf_img, CL_TRUE, 0, size_img, img);
-	queue.EnqueueWriteBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
+	queue.enqueueWriteBuffer(buf_img, CL_TRUE, 0, size_img, img);
+	queue.enqueueWriteBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
 	// 5) set kernel arguments
 	fillHistKernel.setArg(0, buf_img);
 	fillHistKernel.setArg(1, buf_vec_hist);
@@ -75,16 +73,17 @@ int main(){
 	// 7) cpy device -> host
 	queue.enqueueReadBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
 	// 8) wait until finish
-	cl::finish(queue);
+	cl::finish();
 
 	writeFile(vec_hist);
 	// unalloc
+	/*
 	cl::releaseKernel(kernel);
 	cl::releaseProgram(program);
 	cl::releaseCommandQueue(cmdQueue);
 	cl::releaseMemObject(buf_img);
 	cl::releaseMemObject(buf_vec_hist);
-	cl::releaseContext(context);
+	cl::releaseContext(context);*/
 	free(img);
 	free(vec_hist);
 	return 0;
