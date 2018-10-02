@@ -57,24 +57,22 @@ int main(){
 		std::string log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
 		std::cout << log << std::endl;
 	}
-	exit(0);
 	cl::Kernel fillHistKernel(program, "fillHist");
 	// 3) create memory buffer
 	buf_img = cl::Buffer(context, CL_MEM_READ_ONLY, size_img);
 	buf_vec_hist = cl::Buffer(context, CL_MEM_READ_WRITE, size_hist);
 	// 4) copy host -> device
-	queue.enqueueWriteBuffer(buf_img, CL_TRUE, 0, size_img, img);
+    queue.enqueueWriteBuffer(buf_img, CL_TRUE, 0, size_img, img);
 	queue.enqueueWriteBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
 	// 5) set kernel arguments
-	fillHistKernel.setArg(0, buf_img);
+    fillHistKernel.setArg(0, buf_img);
 	fillHistKernel.setArg(1, buf_vec_hist);
 	// 6) execute
-	queue.enqueueNDRangeKernel(fillHistKernel, cl::NullRange, global, local);
-	// 7) cpy device -> host
-	queue.enqueueReadBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
-	// 8) wait until finish
-	cl::finish();
-
+    queue.enqueueNDRangeKernel(fillHistKernel, cl::NullRange, global, local);
+    // 7) cpy device -> host
+    queue.enqueueReadBuffer(buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist);
+    // 8) wait until finish
+    cl::finish();
 	writeFile(vec_hist);
 	// unalloc
 	/*
