@@ -1,11 +1,15 @@
+#define __CL_ENABLE_EXCEPTIONS
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
+
+// #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 
 #include <CL/cl.h>
 #include "main.h"
 
 #define MAX_SOURCE_SIZE (0x100000)
+#define BLOCK_SIZE 32
 
 void loadKernelSource(char *_programSource);
 
@@ -22,7 +26,7 @@ int main(){
 
 	size_t grid[1], block[1];
 	grid[0] = WIDTH*HEIGHT;
-	block[0] = 32;
+	block[0] = BLOCK_SIZE;
 
 	cl_int status;
 	cl_platform_id platform;
@@ -38,6 +42,7 @@ int main(){
 	readImg(img);
 	// 1) setup
 	status = clGetPlatformIDs(1, &platform, NULL);
+	std::cout << status << std::endl;
 	status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &device, NULL);
 	context = clCreateContext(NULL, 1, &device, NULL, NULL, &status);
 	cmdQueue = clCreateCommandQueue(context, device, 0, &status);
@@ -56,6 +61,7 @@ int main(){
 	status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &buf_vec_hist);
 	// 6) execute
 	status = clEnqueueNDRangeKernel(cmdQueue, kernel, 1, NULL, grid, block, 0, NULL, NULL);
+	std::cout << status << std::endl;
 	// 7) cpy device -> host
 	status = clEnqueueReadBuffer(cmdQueue, buf_vec_hist, CL_TRUE, 0, size_hist, vec_hist, 0, NULL, NULL);
 	// 8) wait until finish

@@ -2,12 +2,12 @@
 #define MAIN
 
 
-#define WIDTH 1440
-#define HEIGHT 1920
+#define WIDTH 1024
+#define HEIGHT 1024
 // #define FILE_MONO_IMG "monoturtle.dat"
 #define FILE_MONO_IMG "resizedImg/monoturtle_large.dat"
 
-#define ITER_TIMES 10
+// #define ITER_TIMES 10
 
 int *vec_hist;
 int *img;
