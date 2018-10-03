@@ -1,10 +1,12 @@
+#ifndef __CL_ENABLE_EXCEPTIONS
 #define __CL_ENABLE_EXCEPTIONS
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 
-// #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 
 #include <CL/cl.hpp>
 #include "main.h"
@@ -75,13 +77,6 @@ int main(){
     cl::finish();
 	writeFile(vec_hist);
 	// unalloc
-	/*
-	cl::releaseKernel(kernel);
-	cl::releaseProgram(program);
-	cl::releaseCommandQueue(cmdQueue);
-	cl::releaseMemObject(buf_img);
-	cl::releaseMemObject(buf_vec_hist);
-	cl::releaseContext(context);*/
 	free(img);
 	free(vec_hist);
 	return 0;
