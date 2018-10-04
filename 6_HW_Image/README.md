@@ -1,6 +1,18 @@
 # HW 5 : Monotone
 # Mr. Patomporn Payoungkhamdee SCPY 6138171
 
+## Turtle Image
+
+### Original Image
+<p align="center">
+<img src="turtle.jpg" width="500px" >
+</p>
+
+### Single channel Image
+<p align="center">
+<img src="monoturtle.jpg" width="500px" >
+</p>
+
 ## Histogram counting
 * Let consider a pure base 2 pixel images eg. 1024x1024 for numerical convenient at first
 * For serial code it would loop over 1024x1024 array to fill in 256 bin histogram
