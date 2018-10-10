@@ -12,16 +12,24 @@
 * Application Parallelism
 	* Data-level : many task item process same operation
 	* Task-level : many task of work can be process indep , equiv to data-level iff each task have same operation
+* Sofware categorized
+	* Parallel computing : multiple processes are executed at the same time.
+	* Concurrent computing: different parts of a program can be executed out-of-order without affecting the final result and so can be executed in
+	parallel
 * Parallel Architectures
 	* Instruction-level parallelism: data-level using pipelining
 	* Core-level: multicore
 	* Thread-level: what we do in GPU
 	* Request-level: need warehouse cluster
-* Flynn's Classification
+* Flynn's Classificatio
+	* Instruction : Single , Multiple
+	* Data stream : Single,  Multiple
+	* Note : Name it by 1) Instruction 2) stream, Ex. SIMD
 * Tips: Program is a set of instruction
 * Hardware/Software Categorized
 	* Parallel computing: multiple execute at same time
 	* Concurrent : compute at different or overlapse time
+	* "A system is said to be concurrent if it can support two or more actions in progress at the same time. A system is said to be parallel if it can support two or more actions executing simultaneously"
 * Classification based on memory access
 * Classification based on grain size
 	* Grain size = num of instruction exec by processor before communication occur
@@ -37,8 +45,6 @@
 	* warp exec one common instruction at a time
 	* High performance when??
 * Memory Optimization
-
-
 
 
 
