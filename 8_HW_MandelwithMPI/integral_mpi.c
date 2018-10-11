@@ -3,50 +3,71 @@
 
 #include "integral.h"
 
-void main(int argc, char *argv[]){
-	float size, rank, number;
-	MPI_Request request[N];
-	MPI_STATUS status;
+int main(int argc, char *argv[]){
+	int size, rank, number;
 
-	MPI_INIT(&argc, &argv);
+	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	printf("Number of comm_size (processes) = %d\n", size);
-	float sum[N];
+	if (rank == 0)
+		printf("Number of comm_size (processes) = %d\n", size);
+	
+	MPI_Request request[size-1];
+	MPI_Status status[size-1];
+
+	float sum[size-1];
+	int sub_size = ((N & (size-1) != 0) && rank == size-1)? N/(size-1) + 1 : N/(size-1);
+	float dx = (float) (X_F - X_I) / N;
 
 	if (rank == 0){
-		// loop for sending all process
-		for (unsigned int p=1; p<size; p++){
-			MPI_Isend(&sum[p], 1, MPI_INIT, 1, p, MPI_COMM_WORLD, &request);
+		// send and wait
+		for (unsigned int r=1; r<size; r++){
+			MPI_Irecv(&sum[r-1], 1, MPI_FLOAT, r, r, MPI_COMM_WORLD, &request[r-1]);
 		}
-		// loop for waiting
-		for (unsigned int p=1; p<size; p++){
-			MPI_Wait(&request, &status);
+		for (unsigned int r=1; r<size; r++){
+			MPI_Wait(&request[r-1], &status[r-1]);
+			// checking
+			if (request[rank] == MPI_REQUEST_NULL) {
+				printf("\tReceive request is completed.\n");
+			} else {
+				printf("\tReceive request is still not completed.\n");
+			}
 		}
+		// sum
+		// checking result
+		float final_result;
+		for (unsigned int r=0; r<size; r++){
+			final_result += sum[r];
+		}
+		printf("Integral from MPI = %f \n", final_result);
 	} else {
-
+		float x_i = (float) X_I + dx*sub_size*(rank-1);
+		float x_f = (float) X_I + dx*sub_size*(rank);
+		float result_rank = integrate(x_i, x_f, dx);
+		// send and wait
+		for (unsigned int r=1; r<size; r++){
+			MPI_Isend(&result_rank, 1, MPI_FLOAT, 0, r, MPI_COMM_WORLD, &request[r-1]);
+		}
+		for (unsigned int r=1; r<size; r++){
+			MPI_Wait(&request[r-1], &status[r-1]);
+		}
 	}
-
-	float result;
-	result = integrate(X_I, X_F, N);
-	printf("Result = %f\n", result);
-
-	MPI_Finalize();
+  MPI_Finalize();
+  return 0;
 }
 
 float func(float _x_in){
-	return 1.0f;
+	return 1.0f*_x_in;
 }
 
-float integrate(float _x_i, float _x_f){
-	float dx = (float) (_x_f - _x_i) / N;
-	float sum = 0.0f;
-	float _x_now;
-	for (unsigned int i=0; i<N; i++){
-		_x_now = _x_i*dx;
-		sum += func(_x_now)*dx;
+float integrate(float _x_i, float _x_f, float _dx){
+	float _sum = 0.0f;
+	float _x_now = _x_i + _dx/2.0f;
+	while(_x_now < _x_f){
+		_sum += func(_x_now)*_dx;
+		_x_now += _dx;
 	}
-	return sum;
+	return _sum;
 }
 
 
