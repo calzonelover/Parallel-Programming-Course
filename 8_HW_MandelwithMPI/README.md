@@ -1,15 +1,15 @@
-# HW 6 OpenMP 
+# HW 6 Open MPI : Integral and Mandelbrot set 
 # Mr. Patomporn Payoungkhamdee SCPY6138171
 
-## Numerical integration
+## 1) Numerical integration
 * Compute integral from any given function y(x) by using small summation over region of graph in the given range
 
 ### Method
 * Integrate from X_I to X_F which dx = (X_I - X_F)/N
-* <a href="https://www.codecogs.com/eqnedit.php?latex=S&space;=&space;\sum_{x_i=1}^{n}&space;f_i(x_i)*dx" target="_blank"><img src="https://latex.codecogs.com/svg.latex?S&space;=&space;\sum_{x_i=1}^{n}&space;f_i(x_i)*dx" title="S = \sum_{x_i=1}^{n} f_i(x_i)*dx" /></a>
+* <a href="https://www.codecogs.com/eqnedit.php?latex=\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{x_i=1}^{N}&space;f(x_i)\Delta&space;x" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{x_i=1}^{N}&space;f(x_i)\Delta&space;x" title="\int_{x_i}^{x_f} f(x) dx \equiv \sum_{x_i=1}^{N} f(x_i)\Delta x" /></a>
 * Notice that x_i is the middle of the small rectangle in the summation
 
-## Mandelbrot
+## 2) Mandelbrot
 Compute Mandelbrot set by dividing into sub-grid for 
 compute and feeding back to combine into the global map
 
