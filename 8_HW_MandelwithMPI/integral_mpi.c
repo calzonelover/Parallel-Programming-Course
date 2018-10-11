@@ -42,12 +42,8 @@ int main(int argc, char *argv[]){
 		float x_f = (float) X_I + dx*sub_size*(rank);
 		float result_rank = integrate(x_i, x_f, dx);
 		// send and wait
-		for (unsigned int r=1; r<size; r++){
-			MPI_Isend(&result_rank, 1, MPI_FLOAT, 0, r, MPI_COMM_WORLD, &request[r-1]);
-		}
-		for (unsigned int r=1; r<size; r++){
-			MPI_Wait(&request[r-1], &status[r-1]);
-		}
+		MPI_Isend(&result_rank, 1, MPI_FLOAT, 0, rank, MPI_COMM_WORLD, &request[rank-1]);
+		MPI_Wait(&request[rank-1], &status[rank-1]);
 	}
   MPI_Finalize();
   return 0;
