@@ -24,20 +24,17 @@ int main(int argc, char *argv[]){
 		for (unsigned int r=1; r<size; r++){
 			MPI_Irecv(&sum[r-1], 1, MPI_FLOAT, r, r, MPI_COMM_WORLD, &request[r-1]);
 		}
+		MPI_Waitall(size-1, request, status);
+		// check status
 		for (unsigned int r=1; r<size; r++){
-			MPI_Wait(&request[r-1], &status[r-1]);
-			// checking
-			if (request[rank] == MPI_REQUEST_NULL) {
-				printf("\tReceive request is completed.\n");
-			} else {
-				printf("\tReceive request is still not completed.\n");
-			}
+			printf("process rank %d status %d \n", r,status[r-1].MPI_ERROR);
+			if (status[r-1].MPI_ERROR != MPI_SUCCESS)
+				printf("Processes rank %d is fail\n", r);
 		}
-		// sum
-		// checking result
+		// checking sum result
 		float final_result;
-		for (unsigned int r=0; r<size; r++){
-			final_result += sum[r];
+		for (unsigned int r=1; r<size; r++){
+			final_result += sum[r-1];
 		}
 		printf("Integral from MPI = %f \n", final_result);
 	} else {
