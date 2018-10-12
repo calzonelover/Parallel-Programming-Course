@@ -6,12 +6,11 @@
 
 ### Method
 * Integrate from X_I to X_F which dx = (X_I - X_F)/N
-* <a href="https://www.codecogs.com/eqnedit.php?latex=\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{x_i=1}^{N}&space;f(x_i)\Delta&space;x" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{x_i=1}^{N}&space;f(x_i)\Delta&space;x" title="\int_{x_i}^{x_f} f(x) dx \equiv \sum_{x_i=1}^{N} f(x_i)\Delta x" /></a>
+* <a href="https://www.codecogs.com/eqnedit.php?latex=\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{i=1}^{N}&space;f(x_i)\Delta&space;x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{i=1}^{N}&space;f(x_i)\Delta&space;x" title="\int_{x_i}^{x_f} f(x) dx \equiv \sum_{i=1}^{N} f(x_i)\Delta x" /></a>
 * Notice that x_i is the middle of the small rectangle in the summation
 
 ## 2) Mandelbrot
-Compute Mandelbrot set by dividing into sub-grid for 
-compute and feeding back to combine into the global map
+Evaluate Mandelbrot set by dividing into sub-grid for compute and feeding back to combine into the global map
 
 ### Convention
 * Suppose we have 512x512 grid cell and parallelly compute 128x128 sub-grid => prefer to use 4*4 = 16 processes with one waiter processes
