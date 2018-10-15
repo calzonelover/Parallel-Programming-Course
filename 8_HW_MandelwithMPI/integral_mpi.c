@@ -16,11 +16,13 @@ int main(int argc, char *argv[]){
 	MPI_Status status[size-1];
 
 	float sum[size-1];
-	int sub_size = ((N & (size-1) != 0) && rank == size-1)? N/(size-1) + 1 : N/(size-1);
+	int sub_size = ((N % (size-1) != 0) && rank == size-1)? N/(size-1) + 1 : N/(size-1);
+	if (rank == 0)
+		printf("sub_size = %d \n", sub_size);
 	float dx = (float) (X_F - X_I) / N;
 
 	if (rank == 0){
-		// send and wait
+		// non-blocking receive
 		for (unsigned int r=1; r<size; r++){
 			MPI_Irecv(&sum[r-1], 1, MPI_FLOAT, r, r, MPI_COMM_WORLD, &request[r-1]);
 		}
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]){
 		float x_i = (float) X_I + dx*sub_size*(rank-1);
 		float x_f = (float) X_I + dx*sub_size*(rank);
 		float result_rank = integrate(x_i, x_f, dx);
-		// send and wait
+		// non-blocking send
 		MPI_Isend(&result_rank, 1, MPI_FLOAT, 0, rank, MPI_COMM_WORLD, &request[rank-1]);
 		MPI_Wait(&request[rank-1], &status[rank-1]);
 	}
@@ -50,7 +52,7 @@ int main(int argc, char *argv[]){
 }
 
 float func(float _x_in){
-	return 1.0f*_x_in;
+	return _x_in;
 }
 
 float integrate(float _x_i, float _x_f, float _dx){
@@ -62,24 +64,3 @@ float integrate(float _x_i, float _x_f, float _dx){
 	}
 	return _sum;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

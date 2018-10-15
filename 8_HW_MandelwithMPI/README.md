@@ -13,14 +13,17 @@
 Evaluate Mandelbrot set by dividing into sub-grid for compute and feeding back to combine into the global map
 
 ### Convention
-* Suppose we have 512x512 grid cell and parallelly compute 128x128 sub-grid => prefer to use 4*4 = 16 processes with one waiter processes
+* Suppose we have 1024x1024 grid cell and parallelly compute sub-grid with a slicing array from long map of Mandebrot
 * Consider range (-2, -2) to (2, 2)
 * Set max_iteration as 10,000 even it still not diverge
 * Shade of map is showing how each point converge when diverge mark as black
 
 ### Method
-* Initialize non-blocking receiver all of the sub-grid process
-* For non-zero rank, Init non-blocking sender compute for sending to waiter
-* Visualize the result
+* Initialize processes and virtually compute all processes until all done and gather sub-map (which is array) to globsl Mandebrot map
+* Notice that I'm using MPI_Barrier(MPI_COMM_WORLD) to waiting until all processes done before gather and combine the result
 
 ### Result
+<p align="center">
+<img src="mandel_result.jpg" width="500px" >
+</p>
+
