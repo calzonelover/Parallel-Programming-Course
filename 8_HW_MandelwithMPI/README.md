@@ -5,9 +5,14 @@
 * Compute integral from any given function y(x) by using small summation over region of graph in the given range
 
 ### Method
-* Integrate from X_I to X_F which dx = (X_I - X_F)/N
+* Integrate from X_I to X_F which dx = (X_I - X_F)/N by taking sub-summation of all N by equally splitting into individual processes
 * <a href="https://www.codecogs.com/eqnedit.php?latex=\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{i=1}^{N}&space;f(x_i)\Delta&space;x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\int_{x_i}^{x_f}&space;f(x)&space;dx&space;\equiv&space;\sum_{i=1}^{N}&space;f(x_i)\Delta&space;x" title="\int_{x_i}^{x_f} f(x) dx \equiv \sum_{i=1}^{N} f(x_i)\Delta x" /></a>
 * Notice that x_i is the middle of the small rectangle in the summation
+* We also use non-blocking send-receive for time efficientcy
+
+### Result
+* Parallel algorithm yield the results agree with serial code for any given function with a higher more precision with higher N 
+* IF N % ( Processes - 1 ) = 0 would get more precise calculation relatively to serial code due to rectangle summation has more exact value which cause less floating point operator and we would get more precise value
 
 ## 2) Mandelbrot
 Evaluate Mandelbrot set by dividing into sub-grid for compute and feeding back to combine into the global map
