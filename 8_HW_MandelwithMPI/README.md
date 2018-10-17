@@ -1,5 +1,4 @@
 # HW 6 Open MPI : Integral and Mandelbrot set 
-# Mr. Patomporn Payoungkhamdee SCPY6138171
 
 ## 1) Numerical integration
 * Compute integral from any given function y(x) by using small summation over region of graph in the given range

@@ -1,5 +1,4 @@
 # HW 5 : Monotone
-# Mr. Patomporn Payoungkhamdee SCPY 6138171
 
 ## Turtle Image
 

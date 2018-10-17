@@ -1,57 +1,40 @@
 #include <stdio.h>
 #include <mpi.h>
-
-
-#define SIZE_VEC 9
-
-void master(int _size_pcs);
-void slave(int _rank, int _size_pcs);
-
-
-int main(int argc, char *argv[]){
-	int size_processes, rank, number;
-
-	MPI_Init(&argc, &argv);
-	MPI_Comm_size(MPI_COMM_WORLD, &size_processes);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-	if (rank == 0){
-		master(size_processes);
-	} else {
-		slave(rank, size_processes);
-	}
-	MPI_Finalize();
-	return 0;
-}
-
-
-
-void master(int _size_pcs){
-	int *arr;
-	MPI_Status stat_s[_size_pcs-1], stat_r[_size_pcs-1];
-
-	arr = (int*)malloc(sizeof(int)*SIZE_VEC);
-	for (unsigned int i=0; i<SIZE_VEC; i++)
-		arr[i]=i+1;
-	
-	int arr_n = 0;
-	while (1){		
-		for (unsigned int p=1; p<_size_pcs-1; p++){
-			if (!stat_s[p].MPI_ERROR){
-				MPI_Send(&arr[arr_n], 1, MPI_INT, p, MPI_COMM_WORLD, &stat_s[p]);
-				arr_n++;
-				printf("Already send index %d\n", arr_n);
-				if (arr_n == SIZE_VEC)
-					printf("Processs done !\n");
-					break;
-			}
-		}
-	}
-}
-
-void slave(int _rank, int _size_pcs){
-	int sub_arr;
-	MPI_Status stat_s, stat_r;
-	MPI_Recv(&sub_arr, 1, MPI_INT, 0, _rank, MPI_COMM_WORLD, &stat_r);
-	printf("Process rank %d Receive value %d \n", _rank, sub_arr);
+int main(int argc, char** argv) {
+  int n = 10, i, j, numsent = 0;
+  int rank, size;
+  MPI_Status status;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  if (rank == 0) {
+    for (i=0; i<size-1; i++) {
+      j = numsent++;
+      MPI_Send(&j, 1, MPI_INT, i+1, 1, MPI_COMM_WORLD);
+    }
+    for (i=0; i<n; i++) {
+      MPI_Recv(&j, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      int slave = status.MPI_SOURCE;
+      printf("receive %d from rank %d\n", j, slave);
+      if (numsent < n) {
+        j = numsent++;
+        MPI_Send(&j, 1, MPI_INT, slave, 1, MPI_COMM_WORLD);
+      }
+      else {
+        MPI_Send(&j, 1, MPI_INT, slave, 0, MPI_COMM_WORLD);
+      }
+    }
+  }
+  else {
+    int tag;
+    do {
+      MPI_Recv(&j, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      tag = status.MPI_TAG;
+      printf("Rank %d: receive %d, tag %d\n", rank, j, tag);
+      if (tag == 0) break;
+      MPI_Send(&j, 1, MPI_INT, 0, rank, MPI_COMM_WORLD);
+    } while (tag == 1);
+  }
+  MPI_Finalize();
+  return 0;
 }
