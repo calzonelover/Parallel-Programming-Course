@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
         MPI_Send(&j, 1, MPI_INT, slave, TAG_DONE, MPI_COMM_WORLD);
       }
     }
+
   }
   else {
     int tag;
