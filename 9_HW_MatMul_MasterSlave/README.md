@@ -1,7 +1,7 @@
 # HW 7 : Master-Slave using Open MPI
 
 ## 1) Mandebrot set using Master-Slave
-* Method
+* Method 
 
 ## 2) Count computing time compare between dynamic and static load balancing
 
