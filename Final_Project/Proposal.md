@@ -1,4 +1,5 @@
 # Sentiment analysis with deep learning
+# Mr. Patomporn Payoungkhamdee SCPY 6138171
 
 ## Objective
 To predict the action (like or unlike) from text of comments in movie reviews
@@ -22,4 +23,3 @@ There is various approach to deal with this problem. One of the most sexiest way
 
 ## Reference
 * [0] https://www.kaggle.com/oumaimahourrane/imdb-reviews
-* [1] Vinyals, Oriol, et al. Show and tell: A neural image caption generator. arXiv:1411.4555 (2014).

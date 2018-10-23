@@ -3,8 +3,8 @@
 #include <mpi.h>
 #include <time.h>
 
-#define WIDTH 1024
-#define HEIGHT 1024
+#define WIDTH 512
+#define HEIGHT 512
 #define MAX_ITER 10000
 
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
     float max_width = x_f - x_i + y_f - y_i;
 
     float dx = (x_f - x_i) / WIDTH;
-    float dy = (y_f - y_i) / WIDTH;
+    float dy = (y_f - y_i) / HEIGHT;
 
 	int k;
 	float length_sq;

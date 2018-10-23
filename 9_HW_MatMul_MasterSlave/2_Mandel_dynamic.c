@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
         map = malloc(sizeof(int*)*pb_size);
         for (unsigned int i = 0; i < W; i++)
             map[i] = malloc(sizeof(int)*W); 
-        clock_t start_t = clock();
+        double start_t = MPI_Wtime();
         // First send
         for (unsigned int i=1; i<size; i++) {
             j = numsent++;
@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
                 MPI_Send(&j, 1, MPI_INT, slave, TAG_DONE, MPI_COMM_WORLD);
             }
         }
-        clock_t stop_t = clock();
-        double cpu_time = (double) (stop_t-start_t) / CLOCKS_PER_SEC;
+        double stop_t = MPI_Wtime();
+        double cpu_time = stop_t-start_t;
         printf("Dynamic load balancing CPU time %lf s\n", cpu_time);
         printf("Finish Work! \n");
         writeFile(map);

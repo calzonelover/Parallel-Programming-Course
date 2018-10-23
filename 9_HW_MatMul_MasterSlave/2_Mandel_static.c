@@ -20,7 +20,7 @@ typedef struct Complex
 
 
 int main(int argc, char *argv[]){
-	clock_t start_t, stop_t; double cpu_time;
+	double start_t, stop_t; double cpu_time;
 	int size_process, rank, number;
 	size_t size_map;
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 	int sub_map[WIDTH*HEIGHT/size_process];
 
 	if (rank == 0)
-		start_t = clock();
+		start_t = MPI_Wtime();
 	// Compute map
 	for (unsigned int l_i=0;l_i < sub_elements; l_i++)
 	// for (unsigned int i=sub_elements*rank;i < sub_elements*(rank+1); i++)
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]){
 	MPI_Barrier(MPI_COMM_WORLD);
     
     if (rank == 0){
-    	stop_t = clock();
-		cpu_time = (double) (stop_t-start_t) / CLOCKS_PER_SEC ;
+    	stop_t = MPI_Wtime();
+		cpu_time = stop_t-start_t;
 		printf("Static load balancing CPU time %lf s\n", cpu_time);
     }
     // Collect all sub
