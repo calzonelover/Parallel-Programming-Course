@@ -3,16 +3,34 @@
 #include <mpi.h>
 #include <time.h>
 
-#include "mandelbrot.h"
+#define WIDTH 1024
+#define HEIGHT 1024
+#define MAX_ITER 10000
+
+
+typedef struct Complex
+{
+  float x;
+  float y;
+} Complex;
 
 
 int main(int argc, char *argv[]){
+	clock_t start_t, stop_t; double cpu_time;
 	int size_process, rank, number;
 	size_t size_map;
 
 	Complex z, z_prev, c;
-	float dx = (float) (X_F-X_I)/WIDTH;
-	float dy = (float) (Y_F-Y_I)/HEIGHT;
+
+    float x_i = atof(argv[1]);
+    float x_f = atof(argv[2]);
+    float y_i = atof(argv[3]);
+    float y_f = atof(argv[4]);
+    float max_width = x_f - x_i + y_f - y_i;
+
+    float dx = (x_f - x_i) / WIDTH;
+    float dy = (y_f - y_i) / WIDTH;
+
 	int k;
 	float length_sq;
 	FILE *file;
@@ -38,6 +56,9 @@ int main(int argc, char *argv[]){
 	if (rank == 0)
 		printf("sub_elements = %d\n", sub_elements);
 	int sub_map[WIDTH*HEIGHT/size_process];
+
+	if (rank == 0)
+		start_t = clock();
 	// Compute map
 	for (unsigned int l_i=0;l_i < sub_elements; l_i++)
 	// for (unsigned int i=sub_elements*rank;i < sub_elements*(rank+1); i++)
@@ -47,8 +68,8 @@ int main(int argc, char *argv[]){
 		int d_j = (g_i % WIDTH > 0) ? (g_i-g_i%WIDTH)/WIDTH : g_i/WIDTH ;
 		z.x = z.y = 0.0f;
 		k = 0;
-		c.x = dx*d_j + X_I;
-		c.y = dy*d_i + Y_I;
+		c.x = dx*d_j + x_i;
+		c.y = dy*d_i + y_i;
 		do {
 			z_prev.x = z.x;
 			z_prev.y = z.y;
@@ -56,7 +77,7 @@ int main(int argc, char *argv[]){
 	    	z.y = 2.0*z_prev.x*z_prev.y + c.y;
     		length_sq = z.x*z.x + z.y*z.y;
     		k++;
-		} while (length_sq < (X_F-X_I + Y_F-Y_I) && k < MAX_ITER);
+		} while (length_sq < max_width && k < MAX_ITER);
 		if ( k == MAX_ITER ){
 			sub_map[l_i] = 0;
 		} else {
@@ -66,6 +87,13 @@ int main(int argc, char *argv[]){
 	printf("Job done with rank = %d !! \n", rank);
 	// Gather
 	MPI_Barrier(MPI_COMM_WORLD);
+    
+    if (rank == 0){
+    	stop_t = clock();
+		cpu_time = (double) (stop_t-start_t) / CLOCKS_PER_SEC ;
+		printf("Static load balancing CPU time %lf s\n", cpu_time);
+    }
+    // Collect all sub
 	MPI_Gather(sub_map, sub_elements, MPI_INT, map, sub_elements, MPI_INT, 0, MPI_COMM_WORLD);
 	// write file
 	if (rank == 0){

@@ -8,11 +8,6 @@
 #define W 1024
 #define MAX_ITER 10000
 
-#define X_I -2.
-#define X_F 2.
-#define Y_I -2.
-#define Y_F 2.
-
 typedef struct Complex
 {
   float x;
@@ -20,7 +15,7 @@ typedef struct Complex
 } Complex;
 
 
-int iterMandel(Complex _c);
+int iterMandel(Complex _c, float _max_width);
 void writeFile(int **_map);
 
 int main(int argc, char** argv) {
@@ -33,8 +28,14 @@ int main(int argc, char** argv) {
     int numsent = 0;
     int pb_size = W;
 
-    float dx = (X_F - X_I) / W;
-    float dy = (Y_F - Y_I) / W;
+    float x_i = atof(argv[1]);
+    float x_f = atof(argv[2]);
+    float y_i = atof(argv[3]);
+    float y_f = atof(argv[4]);
+    float max_width = x_f - x_i + y_f - y_i;
+
+    float dx = (x_f - x_i) / W;
+    float dy = (y_f - y_i) / W;
 
     if (rank == 0) {
         int **map, j;
@@ -77,9 +78,9 @@ int main(int argc, char** argv) {
                 g_i = W*pb_i + i;
                 d_i = g_i % W;
                 d_j = (g_i % W > 0) ? (g_i - g_i%W)/W : g_i/W ;
-                c_local.x = dx*d_i + X_I;
-                c_local.y = dy*d_j + Y_I;
-                slice_map[i] = iterMandel(c_local);
+                c_local.x = dx*d_i + x_i;
+                c_local.y = dy*d_j + y_i;
+                slice_map[i] = iterMandel(c_local, max_width);
             }
             MPI_Send(slice_map, W, MPI_INT, 0, rank, MPI_COMM_WORLD);
         } while (tag == TAG_INPROGRESS);
@@ -88,7 +89,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-int iterMandel(Complex _c){
+int iterMandel(Complex _c, float _max_width){
     int _out, _k=0;
     Complex _z, _z_prev;
     float _length_sq;
@@ -100,7 +101,7 @@ int iterMandel(Complex _c){
         _z.y = 2.0*_z_prev.x*_z_prev.y + _c.y;
         _length_sq = _z.x*_z.x + _z.y*_z.y;
         _k++;
-    } while(_length_sq < (X_F-X_I + Y_F-Y_I) && _k < MAX_ITER);
+    } while(_length_sq < _max_width && _k < MAX_ITER);
     if (_k == MAX_ITER){
         _out = 0;
     } else {
@@ -111,7 +112,7 @@ int iterMandel(Complex _c){
 
 void writeFile(int **_map){
     FILE *file;
-    file = fopen("1_mandel_result.ppm", "w");
+    file = fopen("3_mandel_result.ppm", "w");
     fprintf(file, "P2 %d %d 16\n", W, W);
     for (unsigned int _i=0; _i<W; _i++){
         for (unsigned int _j=0; _j<W; _j++){

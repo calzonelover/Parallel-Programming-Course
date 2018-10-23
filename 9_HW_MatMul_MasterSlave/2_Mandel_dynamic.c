@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <time.h>
 
 #define TAG_DONE 0
 #define TAG_INPROGRESS 1
@@ -41,6 +42,7 @@ int main(int argc, char** argv) {
         map = malloc(sizeof(int*)*pb_size);
         for (unsigned int i = 0; i < W; i++)
             map[i] = malloc(sizeof(int)*W); 
+        clock_t start_t = clock();
         // First send
         for (unsigned int i=1; i<size; i++) {
             j = numsent++;
@@ -59,6 +61,9 @@ int main(int argc, char** argv) {
                 MPI_Send(&j, 1, MPI_INT, slave, TAG_DONE, MPI_COMM_WORLD);
             }
         }
+        clock_t stop_t = clock();
+        double cpu_time = (double) (stop_t-start_t) / CLOCKS_PER_SEC;
+        printf("Dynamic load balancing CPU time %lf s\n", cpu_time);
         printf("Finish Work! \n");
         writeFile(map);
     }
