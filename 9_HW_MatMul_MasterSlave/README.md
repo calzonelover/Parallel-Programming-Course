@@ -43,7 +43,7 @@ This has been showing in code file
 * Plot of speecup factor relatively to serial code from vary problemsizes such that size per processes is the same
 * Given that speed up factor defined by using t_serial/t_parallel (I got 13.89 s as a serial prpgram)
 * For a given 2^9 problem size per process
-	* Results log2 vs speed up
+	* Results num_processes vs speed up
 	
 	<p align="center">
 	<img src="5.png" width="500px" >
