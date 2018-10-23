@@ -46,5 +46,5 @@ This has been showing in code file
 	* Results log2 vs speed up
 	
 	<p align="center">
-	<img src="5.jpg" width="500px" >
+	<img src="5.png" width="500px" >
 	</p>
