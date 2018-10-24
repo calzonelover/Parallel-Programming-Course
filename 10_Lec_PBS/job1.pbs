@@ -1,0 +1,18 @@
+#!/bin/sh
+#PBS -N patomporn_job
+#PBS -o hello.$PBS_JOBID.o
+#PBS -e hello.$PBS_JOBID.e
+#PBS -q batch
+#PBS -l nodes=1
+
+cd $PBS_O_WORKDIR
+
+echo working directory is $PBS_O_WORKDIR
+echo running on host `hostname`
+echo directory is `pwd`
+echo run on `cat $PBS_NODEFILE`
+
+# Compile before exec
+/usr/bin/mpicc hello.c -o hello.x
+
+/usr/bin/mpiexec -n 4 ./hello.x
