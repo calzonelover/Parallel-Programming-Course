@@ -5,8 +5,12 @@
 Consider classic gravitational force from Newtonian equation we would get
 
 <p align="center">
-<a href="https://www.codecogs.com/eqnedit.php?latex=\vec{a}_{\alpha,&space;i}&space;=&space;\sum_{\beta\neq&space;\alpha}&space;Gm^\beta&space;\frac{(\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i})}{|\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i}|^3}&space;\hspace{50pt}&space;(0)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\vec{a}_{\alpha,&space;i}&space;=&space;\sum_{\beta\neq&space;\alpha}&space;Gm^\beta&space;\frac{(\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i})}{|\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i}|^3}&space;\hspace{50pt}&space;(0)" title="\vec{a}_{\alpha, i} = \sum_{\beta\neq \alpha} Gm^\beta \frac{(\vec{r}_{\beta,i} - \vec{r}_{\alpha, i})}{|\vec{r}_{\beta,i} - \vec{r}_{\alpha, i}|^3} \hspace{50pt} (0)" /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\vec{a}_{\alpha,&space;i}&space;=&space;\sum_{\beta\neq&space;\alpha}&space;Gm_\beta&space;\frac{(\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i})}{|\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i}|^3}&space;\hspace{50pt}&space;(0)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\vec{a}_{\alpha,&space;i}&space;=&space;\sum_{\beta\neq&space;\alpha}&space;Gm_\beta&space;\frac{(\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i})}{|\vec{r}_{\beta,i}&space;-&space;\vec{r}_{\alpha,&space;i}|^3}&space;\hspace{50pt}&space;(0)" title="\vec{a}_{\alpha, i} = \sum_{\beta\neq \alpha} Gm_\beta \frac{(\vec{r}_{\beta,i} - \vec{r}_{\alpha, i})}{|\vec{r}_{\beta,i} - \vec{r}_{\alpha, i}|^3} \hspace{50pt} (0)" /></a>
 </p>
+
+## Convention
+* Set G = 1 
+* Random initial position and velocity from 
 
 ## Leapfrog Integrations
 Since Taylor's expansion correction is not accuracy enough for long dt which would be exploid, in this homework I would use more accurate approach called "Leapfrog Integrations". The equation relation governed by
