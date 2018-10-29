@@ -1,10 +1,10 @@
 #ifndef N_BODY
 #define N_BODY
 
-#define N_PARTICLES 5
-#define NT 2000
-#define PERIOD_SNAP 10
-#define STEP_TIME 0.01
+#define N_PARTICLES 10
+#define NT 1000
+#define PERIOD_SNAP 1
+#define STEP_TIME 0.0001
 
 #define X_I -1.0
 #define X_F 1.0

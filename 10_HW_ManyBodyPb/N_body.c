@@ -8,7 +8,7 @@
 #include "N_body.h"
 
 
-void main(int argc, char** argv) {
+void main(int argc, char** argv){
 	int rank, size;
 	MPI_Status status;
 
