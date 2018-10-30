@@ -10,17 +10,22 @@ Particle initParticle(Particle _particles[]);
 
 void main(int argc, char** argv){
     Particle particles[N_PARTICLES];
-    float v_half[2], a[2] = {0,0}; // to store data in x, y
+    Particle current_particles[N_PARTICLES];
+    float v_half[2], a[2]; // to store data in x, y
     float dr[2], abs_dr[2];
     /// initialize
+    
     *particles = initParticle(particles);
-    // for (unsigned int p_i = 0; p_i < N_PARTICLES; p_i++){
-    //     printf("Time init Before Particle_%d x = %f y = %f vx=%f vy=%f \n", p_i, particles[p_i].x, particles[p_i].y, particles[p_i].vx, particles[p_i].vy);
-    // }
+    *current_particles = initParticle(current_particles);
+
+    for (unsigned int p_i = 0; p_i < N_PARTICLES; p_i++){
+        printf("Time init Before Particle_%d x = %f y = %f vx=%f vy=%f \n", p_i, particles[p_i].x, particles[p_i].y, particles[p_i].vx, particles[p_i].vy);
+    }
     /// time
     for (unsigned int t_i=0; t_i < NT; t_i++){
         // find acceleration
         for (unsigned int my_i=0; my_i < N_PARTICLES; my_i++){
+            a[0] = a[1] = 0.0f;
             for (unsigned int p_i=0; p_i < N_PARTICLES; p_i++){
                 if (p_i != my_i){
                     dr[0] = particles[p_i].x - particles[my_i].x;
@@ -29,12 +34,21 @@ void main(int argc, char** argv){
                     a[1] += particles[p_i].m*dr[1]/pow( dr[0]*dr[0] + dr[1]*dr[1], 3.0f/2.0f);
                 }
             }
-            particles[my_i].vx += a[0]*STEP_TIME;
-            particles[my_i].vy += a[1]*STEP_TIME;
-            particles[my_i].x += particles[my_i].vx*STEP_TIME;
-            particles[my_i].y += particles[my_i].vy*STEP_TIME;
+            current_particles[my_i].vx += a[0]*STEP_TIME;
+            current_particles[my_i].vy += a[1]*STEP_TIME;
+            current_particles[my_i].x += current_particles[my_i].vx*STEP_TIME;
+            current_particles[my_i].y += current_particles[my_i].vy*STEP_TIME;
         }
-        a[0] = a[1] = 0.0f;
+        // for (unsigned int p_i = 0; p_i < N_PARTICLES; p_i++){
+        //     printf("Time init Before Particle_%d x = %f y = %f vx=%f vy=%f \n", p_i, particles[p_i].x, particles[p_i].y, particles[p_i].vx, particles[p_i].vy);
+        // }
+        // // update new particle
+        for (unsigned int my_i=0; my_i < N_PARTICLES; my_i++){
+            particles[my_i].x = current_particles[my_i].x;
+            particles[my_i].y = current_particles[my_i].y;
+            particles[my_i].vx = current_particles[my_i].vx;
+            particles[my_i].vy = current_particles[my_i].vy;
+        }
         snapShot(particles, t_i);
     }
 }

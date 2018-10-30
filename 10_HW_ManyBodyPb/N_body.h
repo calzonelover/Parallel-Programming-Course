@@ -18,6 +18,7 @@
 #define TAG_DONE 1
 #define TAG_UPDATE_POSITION 2
 #define TAG_UPDATE_VELOCITY 3
+#define TAG_BCAST 4
 
 typedef struct{
 	float x, y;

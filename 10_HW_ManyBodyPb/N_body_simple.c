@@ -7,6 +7,8 @@
 
 #include "N_body.h"
 
+void declareNewType(MPI_Datatype _new_dat_type);
+
 void main(int argc, char** argv){
 	int rank, size;
 	MPI_Status status;
@@ -22,13 +24,16 @@ void main(int argc, char** argv){
 	MPI_Datatype MPI_PARTICLE;
 	MPI_Type_contiguous(7, MPI_FLOAT, &MPI_PARTICLE);
 	MPI_Type_commit(&MPI_PARTICLE);
+	// declareNewType(MPI_PARTICLE);
 
 	// initialize N particles
 	Particle particles[N_PARTICLES];
+	Particle my_particle;
+
 	if (rank == 0){
+		Particle particles[N_PARTICLES];
 		srand(time(NULL));
-		for (unsigned int i = 0; i < N_PARTICLES; i++)
-		{
+		for (unsigned int i = 0; i < N_PARTICLES; i++){
 			particles[i].x = (float) ((rand()/ (float)RAND_MAX - 0.5f)* 2.0f) * (float)X_MAX;
 			particles[i].y = (float) ((rand()/ (float)RAND_MAX - 0.5f)* 2.0f) * (float)X_MAX;
 			particles[i].vx = (float) ((rand()/ (float)RAND_MAX - 0.5f)* 2.0f) * (float)V_MAX;
@@ -63,13 +68,15 @@ void main(int argc, char** argv){
 					num_sent++;
 				}
 			}
-			num_sent = 0;
 			// MPI Broadcast new N particles from root
+			for (unsigned int r_i=1; r_i<size; r_i++){
+				MPI_Send(&num_sent, 1, MPI_INT, r_i, TAG_BCAST, MPI_COMM_WORLD);
+			}
 			MPI_Bcast(&particles, N_PARTICLES, MPI_PARTICLE, 0, MPI_COMM_WORLD);
 			// save file in some step time
-            for (unsigned int p_i=0; p_i < N_PARTICLES; p_i++){
-	        	printf("Time %d Before Particle_%d x = %f y = %f vx=%f vy=%f \n", t_i, p_i, particles[p_i].x, particles[p_i].y, particles[p_i].vx, particles[p_i].vy);
-            }
+            // for (unsigned int p_i=0; p_i < N_PARTICLES; p_i++){
+	        // 	printf("Time %d Particle_%d x = %f y = %f vx=%f vy=%f \n", t_i, p_i, particles[p_i].x, particles[p_i].y, particles[p_i].vx, particles[p_i].vy);
+            // }
 			if (t_i % PERIOD_SNAP == 0)
 				snapShot(particles, t_i);
 		}
@@ -79,7 +86,6 @@ void main(int argc, char** argv){
 		}
 
 	} else { /// Slave
-		Particle my_particle;
 		int tag, my_i;
 		float v_half[2], a_0[2] = {0,0}, a_1[2] = {0,0}; // to store data in x, y
 		float dr[2], abs_dr[2];
@@ -101,16 +107,18 @@ void main(int argc, char** argv){
 						a_1[1] += particles[p_i].m*dr[1]/pow( dr[0]*dr[0] + dr[1]*dr[1], 3.0f/2.0f);
 					}
 				}
-                printf("my_i %d a1_x = %f, a1_y = %f \n", my_i, a_1[0], a_1[1]);
+                // printf("my_i %d a1_x = %f, a1_y = %f \n", my_i, a_1[0], a_1[1]);
 				// 3) update new velocity v_1
-				my_particle.vx += a_1[0]*STEP_TIME;
-				my_particle.vy += a_1[1]*STEP_TIME;
+				my_particle.vx += a_1[0]*STEP_TIME; a_1[0] = 0.0f;
+				my_particle.vy += a_1[1]*STEP_TIME; a_1[1] = 0.0f;
                 my_particle.x += my_particle.vx*STEP_TIME;
                 my_particle.y += my_particle.vy*STEP_TIME;
-				a_1[0] = 0.0f;
-				a_1[1] = 0.0f;
+				// printf("test in slave : x = %f y = %f \n", my_particle.vx*STEP_TIME, my_particle.vy*STEP_TIME);
 				// send to update new velocity and get again
 				MPI_Send(&my_particle, 1, MPI_PARTICLE, 0, TAG_UPDATE_POSITION, MPI_COMM_WORLD);
+			}
+			if (tag == TAG_BCAST){
+				MPI_Bcast(&particles, N_PARTICLES, MPI_PARTICLE, 0, MPI_COMM_WORLD);
 			}
 			/// end update process
 		} while(tag != TAG_DONE );
@@ -118,7 +126,6 @@ void main(int argc, char** argv){
 
 	MPI_Finalize();
 }
-
 
 void snapShot(Particle _particles[], int _t_i){
 	FILE *file;
@@ -131,7 +138,38 @@ void snapShot(Particle _particles[], int _t_i){
     fclose(file);
 }
 
+void declareNewType(MPI_Datatype _new_dat_type){
+	int _N = 7; // from our dat type
+	Particle my_par;
+	int _block[_N];
+	MPI_Aint _displacement[_N];
+	MPI_Datatype _type[_N];
+	MPI_Aint _start, _stop;
+	for (unsigned int i=0; i<_N;i++){
+		_block[i] = 1;
+		_type[i] = MPI_FLOAT;
+	}
+	// get displacement
+	_displacement[0] = 0;
+	MPI_Get_address(&my_par.x, &_start);
+	MPI_Get_address(&my_par.y, &_stop);
+	_displacement[1] = _stop - _start;
+	MPI_Get_address(&my_par.y, &_start);
+	MPI_Get_address(&my_par.vx, &_stop);
+	_displacement[2] = _stop - _start;
+	MPI_Get_address(&my_par.vx, &_start);
+	MPI_Get_address(&my_par.vy, &_stop);
+	_displacement[3] = _stop - _start;
+	MPI_Get_address(&my_par.vy, &_start);
+	MPI_Get_address(&my_par.v_half_x, &_stop);
+	_displacement[4] = _stop - _start;
+	MPI_Get_address(&my_par.v_half_x, &_start);
+	MPI_Get_address(&my_par.v_half_y, &_stop);
+	_displacement[5] = _stop - _start;
+	MPI_Get_address(&my_par.v_half_y, &_start);
+	MPI_Get_address(&my_par.m, &_stop);
+	_displacement[6] = _stop - _start;
 
-
-
-
+	MPI_Type_create_struct(_N, _block, _displacement, _type, &_new_dat_type);
+	MPI_Type_commit(&_new_dat_type);
+}
