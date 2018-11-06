@@ -5,16 +5,16 @@
 
 #include <mpi.h>
 
-
 #define XMAX 1.0
 #define YMAX 1.0
 #define NX 201
 #define NY 201
 #define V 0.1
-#define NT 10
+#define NT 1000
 #define A 1000.0
 #define DT 0.035
 
+#define TAG_TELL_IY 6
 #define TAG_STEP_WAVE 2
 #define TAG_UPDATE_WAVE 3
 #define TAG_BCAST 4
@@ -26,6 +26,7 @@ void writeFile(float **_map);
 int main(int argc, char** argv){
 	int rank, size;
 	MPI_Status status;
+	double start_t, stop_t;
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -47,7 +48,7 @@ int main(int argc, char** argv){
 	for (unsigned int iy=0; iy<NY; iy++){
 		wave2d_u0[iy] = malloc(sizeof(float)*NX);
 		wave2d_u1[iy] = malloc(sizeof(float)*NX);
-		wave2d_u2[iy] = (float*)malloc(sizeof(float)*NX);
+		wave2d_u2[iy] = malloc(sizeof(float)*NX);
 	}
 	// initialize
 	float x_now, y_now;
@@ -65,6 +66,9 @@ int main(int argc, char** argv){
 			}
 		}
 	}
+	// if (rank == 0){
+	// 	writeFile(wave2d_u0);
+	// }
 	for (unsigned int iy=0; iy<NY; iy++){
 		MPI_Bcast(wave2d_u0[iy], NX, MPI_FLOAT, 0, MPI_COMM_WORLD);
 		MPI_Bcast(wave2d_u1[iy], NX, MPI_FLOAT, 0, MPI_COMM_WORLD);
@@ -74,7 +78,9 @@ int main(int argc, char** argv){
 	if ( rank == 0){
 		int num_sent;
 		int slave_i;
+		int iy_get;
 		// loop over time
+		start_t = MPI_Wtime();
 		for (unsigned int t_i=0; t_i < NT; t_i++){
 			num_sent = 0;
 			// step wave
@@ -83,11 +89,9 @@ int main(int argc, char** argv){
 				num_sent++;
 			}
 			for (unsigned int iy=0; iy<NY; iy++){
-				MPI_Recv(wave2d_u2[iy], NX, MPI_FLOAT, MPI_ANY_SOURCE, TAG_STEP_WAVE, MPI_COMM_WORLD, &status);
-				// for(unsigned int i=0; i<NX; i++){
-				// 	printf("wave 2d u0 = %f u1 = %f \n", wave2d_u1[iy][i], wave2d_u1[iy][i] );
-				// }
+				MPI_Recv(&iy_get, 1, MPI_INT, MPI_ANY_SOURCE, TAG_TELL_IY, MPI_COMM_WORLD, &status);
 				slave_i = status.MPI_SOURCE;
+				MPI_Recv(wave2d_u2[iy_get], NX, MPI_FLOAT, slave_i, TAG_STEP_WAVE, MPI_COMM_WORLD, &status);
 				if (num_sent < NY){
 					MPI_Send(&num_sent, 1, MPI_INT, slave_i, TAG_STEP_WAVE, MPI_COMM_WORLD);
 					num_sent++;
@@ -99,9 +103,6 @@ int main(int argc, char** argv){
 					if (ix > 0 && iy > 0 && ix < NX -1 && iy < NY -1 ){
 						wave2d_u0[iy][ix] = wave2d_u1[iy][ix];
 						wave2d_u1[iy][ix] = wave2d_u2[iy][ix];
-					} else {
-						wave2d_u0[iy][ix] = 0.0f;
-						wave2d_u1[iy][ix] = 0.0f;
 					}
 				}
 			}
@@ -114,12 +115,15 @@ int main(int argc, char** argv){
 				MPI_Bcast(wave2d_u2[iy], NX, MPI_FLOAT, 0, MPI_COMM_WORLD);
 			}
 		}
+		stop_t = MPI_Wtime();
+		double elapse_time = stop_t - start_t;
+		printf("Elapse time %lf \n", elapse_time);
 		// end loop time
 		for (unsigned int r_i=1; r_i<size; r_i++){
 			MPI_Send(&num_sent, 1, MPI_INT, r_i, TAG_DONE, MPI_COMM_WORLD);
 		}
 		// write file
-		writeFile(wave2d_u2);
+		writeFile(wave2d_u0);
 	} else {
 	/// Slave
 		int tag, my_iy;
@@ -135,10 +139,9 @@ int main(int argc, char** argv){
 						wave2d_u2[my_iy][ix] = (2.0f-4.0f*C2)*wave2d_u1[my_iy][ix] - wave2d_u0[my_iy][ix]
 		        					      + C2*(wave2d_u1[my_iy][ix+1]+wave2d_u1[my_iy][ix-1]
         		      					  + wave2d_u1[my_iy+1][ix]+wave2d_u1[my_iy-1][ix]);
-						// if (wave2d_u2[my_iy][ix] > 0.0001f)
-							// printf("value u2 = %f \n", wave2d_u2[my_iy][ix]);
 					}
 				}
+				MPI_Send(&my_iy, 1, MPI_INT, 0, TAG_TELL_IY, MPI_COMM_WORLD);
 				MPI_Send(wave2d_u2[my_iy], NX, MPI_FLOAT, 0, TAG_STEP_WAVE, MPI_COMM_WORLD);
 			} else if ( tag == TAG_BCAST ){
 			// update
