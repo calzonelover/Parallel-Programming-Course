@@ -127,7 +127,6 @@ int main(int argc, char** argv){
 	} else {
 	/// Slave
 		int tag, my_iy;
-		float *my_slice_u2;
 		do{
 			MPI_Recv(&my_iy, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 			tag = status.MPI_TAG;
