@@ -7,7 +7,6 @@
 
 #include "wave_cudaMpi.h"
 
-
 void writeFile(float *_map);
 void init_variables(float *wave2d_u0,float *wave2d_u1, float _dx, int _rank);
 void sync_halo(float *_wave2d_u1, float *_my_send_halo, float *_my_recv_halo, int _rank, MPI_Request _request[], MPI_Status _status[]);
