@@ -52,8 +52,8 @@ int main(int argc, char** argv){
     init_variables(wave2d_u0, wave2d_u1, dx, rank);
     inject_var_to_device(d_wave2d_u0, wave2d_u0, my_size);
     inject_var_to_device(d_wave2d_u1, wave2d_u1, my_size);
-    inject_var_to_device(d_wave2d_u2, wave2d_u2, my_size);
-    inject_var_to_device(d_my_recv_halo, my_recv_halo, size_vec);
+    alloc_var_device(d_wave2d_u2, my_size);
+    alloc_var_device(d_my_recv_halo, size_vec);
     // Loop over time step
     for (unsigned int t_i=0; t_i < NT; t_i++){
         // sync halo
@@ -75,7 +75,6 @@ int main(int argc, char** argv){
     MPI_Finalize();
     return 0;
 }
-
 
 
 void writeFile(float *_map){
