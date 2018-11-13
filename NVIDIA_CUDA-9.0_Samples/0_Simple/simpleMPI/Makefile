@@ -324,10 +324,10 @@ else
 	@echo "Sample is ready - all dependencies have been met"
 endif
 
-simpleMPI_mpi.o:simpleMPI.cpp
+simpleMPI_mpi.o:wave_cudaMpi.cpp
 	$(EXEC) $(MPICXX) $(INCLUDES) $(MPI_CCFLAGS) -o $@ -c $<
 
-simpleMPI.o:simpleMPI.cu
+simpleMPI.o:wave_cuda_kernel.cu
 	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
 simpleMPI: simpleMPI_mpi.o simpleMPI.o
