@@ -74,13 +74,14 @@ extern "C" void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2
 
     kernel_stepWave<<<G,B>>>(_d_wave2d_u0, _d_wave2d_u1, _d_wave2d_u2, _d_my_recv_halo, _rank, _C2);
 
-    cudaMemcpy(_wave2d_u0, _d_wave2d_u0, _my_size, cudaMemcpyDeviceToHost);
-    cudaMemcpy(_wave2d_u1, _d_wave2d_u1, _my_size, cudaMemcpyDeviceToHost);
+    // cudaMemcpy(_wave2d_u0, _d_wave2d_u0, _my_size, cudaMemcpyDeviceToHost);
+    // cudaMemcpy(_wave2d_u1, _d_wave2d_u1, _my_size, cudaMemcpyDeviceToHost);
     cudaMemcpy(_wave2d_u2, _d_wave2d_u2, _my_size, cudaMemcpyDeviceToHost);
 
     cudaFree(_d_wave2d_u0);
     cudaFree(_d_wave2d_u1);
     cudaFree(_d_wave2d_u2);
+    cudaFree(_d_my_recv_halo);
 }
 
 extern "C" void updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, int _rank){
@@ -101,7 +102,7 @@ extern "C" void updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_
 
     cudaMemcpy(_wave2d_u0, _d_wave2d_u0, _my_size, cudaMemcpyDeviceToHost);
     cudaMemcpy(_wave2d_u1, _d_wave2d_u1, _my_size, cudaMemcpyDeviceToHost);
-    cudaMemcpy(_wave2d_u2, _d_wave2d_u2, _my_size, cudaMemcpyDeviceToHost);    
+    // cudaMemcpy(_wave2d_u2, _d_wave2d_u2, _my_size, cudaMemcpyDeviceToHost);
 
     cudaFree(_d_wave2d_u0);
     cudaFree(_d_wave2d_u1);
