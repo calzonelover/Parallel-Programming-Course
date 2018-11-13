@@ -1,7 +1,11 @@
 #include "wave_cudaMpi.h"
 
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include <iostream>
+using std::cerr;
+using std::endl;
+
+// #include <cuda.h>
+// #include <cuda_runtime.h>
 
 // Error handling macro
 #define CUDA_CHECK(call) \
