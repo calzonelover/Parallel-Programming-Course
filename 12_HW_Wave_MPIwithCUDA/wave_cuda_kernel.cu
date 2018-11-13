@@ -1,8 +1,7 @@
 #include "wave_cudaMpi.h"
 
-#include <cuda.h>
-#include <cuda_runtime.h>
-
+// #include <cuda.h>
+// #include <cuda_runtime.h>
 
 
 __global__ void kernel_stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2){
