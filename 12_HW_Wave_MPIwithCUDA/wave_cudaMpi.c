@@ -65,6 +65,7 @@ int main(int argc, char** argv){
         stepWave(d_wave2d_u0, d_wave2d_u1, d_wave2d_u2, d_my_recv_halo, rank, C2);
         updateWave(d_wave2d_u0, d_wave2d_u1, d_wave2d_u2, rank);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     load_var_to_host(wave2d_u0, d_wave2d_u0, my_size);
     // collect and write file
     MPI_Barrier(MPI_COMM_WORLD);

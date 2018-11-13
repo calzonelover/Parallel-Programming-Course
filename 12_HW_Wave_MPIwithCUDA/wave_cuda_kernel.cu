@@ -9,11 +9,11 @@ __global__ void kernel_stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wa
     int global_iy = NY/2*_rank + iy;
     int indx = ix+iy*NX;
     if (ix > 0 && global_iy > 0 && ix < NX -1 && global_iy < NY - 1){
-        if ( _rank == 0 && global_iy == NY/2 - 1 ){
+        if ( _rank == 0 && iy == NY/2 - 1 ){
             _wave2d_u2[indx] = (2.0f-4.0f*_C2)*_wave2d_u1[indx] - _wave2d_u0[indx]
                         + _C2*(_wave2d_u1[(ix+1)+iy*NX]+_wave2d_u1[(ix-1)+iy*NX]
                         + _my_recv_halo[ix]+_wave2d_u1[ix+(iy-1)*NX]);
-        } else if ( _rank == 1 && global_iy == NY/2 ){
+        } else if ( _rank == 1 && iy == 0 ){
             _wave2d_u2[indx] = (2.0f-4.0f*_C2)*_wave2d_u1[indx] - _wave2d_u0[indx]
                         + _C2*(_wave2d_u1[(ix+1)+iy*NX]+_wave2d_u1[(ix-1)+iy*NX]
                         + _wave2d_u1[ix+(iy+1)*NX]+_my_recv_halo[ix]);
