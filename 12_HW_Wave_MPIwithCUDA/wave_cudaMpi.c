@@ -80,7 +80,7 @@ int main(int argc, char** argv){
 
 void writeFile(float *_map){
 	FILE *file;
-	file = fopen("wave2d_map.dat", "w");
+	file = fopen("wave2d_cudampi_map.dat", "w");
 	for (unsigned int _i=0; _i<NX; _i++){
 		for (unsigned int _j=0; _j<NY; _j++){
 			fprintf(file, "%f \t", _map[_i+_j*NX]);
