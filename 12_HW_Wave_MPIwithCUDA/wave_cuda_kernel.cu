@@ -30,7 +30,7 @@ __global__ void kernel_updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_
     int ix = threadIdx.x + blockIdx.x*blockDim.x;
     int iy = threadIdx.y + blockIdx.y*blockDim.y;
     if (ix > 0 && iy > 0 && ix < NX-1 && iy < NY-1){
-        int indx = ix+iy*nx;
+        int indx = ix+iy*NX;
         _wave2d_u0[indx] = _wave2d_u1[indx];
         _wave2d_u1[indx] = _wave2d_u2[indx];
     }
