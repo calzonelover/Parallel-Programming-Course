@@ -3,6 +3,13 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+// Error handling macro
+#define CUDA_CHECK(call) \
+    if((call) != cudaSuccess) { \
+        cudaError_t err = cudaGetLastError(); \
+        cerr << "CUDA error calling \""#call"\", code is " << err << endl; \
+        my_abort(err); }
+
 __global__ void kernel_stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2){
     int ix = threadIdx.x + blockIdx.x*blockDim.x;
     int iy = threadIdx.y + blockIdx.y*blockDim.y;
