@@ -52,14 +52,14 @@ extern "C" void load_var_to_device(float *d_var, float *h_var, size_t size){
     cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
 }
 
-extern "C" void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2){
+extern "C" void stepWave(float *_d_wave2d_u0, float *_d_wave2d_u1, float *_d_wave2d_u2, float *_d_my_recv_halo, int _rank, float _C2){
     dim3 B(32, 32);
     dim3 G(NX/32+1, (NY/2)/32+1);
-    kernel_stepWave<<<G,B>>>(_wave2d_u0, _wave2d_u1, _wave2d_u2, _my_recv_halo, _rank, _C2);
+    kernel_stepWave<<<G,B>>>(_d_wave2d_u0, _d_wave2d_u1, _d_wave2d_u2, _d_my_recv_halo, _rank, _C2);
 }
 
-extern "C" void updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, int _rank){
+extern "C" void updateWave(float *_d_wave2d_u0, float *_d_wave2d_u1, float *_d_wave2d_u2, int _rank){
     dim3 B(32, 32);
     dim3 G(NX/32+1, (NY/2)/32+1);
-    kernel_updateWave<<<G,B>>>(_wave2d_u0, _wave2d_u1, _wave2d_u2, _rank);
+    kernel_updateWave<<<G,B>>>(_d_wave2d_u0, _d_wave2d_u1, _d_wave2d_u2, _rank);
 }
