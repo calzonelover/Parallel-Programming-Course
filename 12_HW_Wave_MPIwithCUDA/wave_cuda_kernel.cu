@@ -52,14 +52,56 @@ extern "C" void load_var_to_device(float *d_var, float *h_var, size_t size){
     cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
 }
 
-extern "C" void stepWave(float *_d_wave2d_u0, float *_d_wave2d_u1, float *_d_wave2d_u2, float *_d_my_recv_halo, int _rank, float _C2){
+extern "C" void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2){
     dim3 B(32, 32);
     dim3 G(NX/32+1, (NY/2)/32+1);
+    size_t _my_size = NX*(NY/2)*sizeof(float);
+    size_t _size_vec = NX*sizeof(float);
+
+    float *_d_wave2d_u0 = NULL, *_d_wave2d_u1 = NULL, *_d_wave2d_u2 = NULL;
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u0, _my_size));
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u1, _my_size));
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u2, _my_size));
+    float *_d_my_recv_halo = NULL;
+    CUDA_CHECK(cudaMalloc((void **)&_d_my_recv_halo, _size_vec));
+
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u0, _wave2d_u0, _my_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u1, _wave2d_u1, _my_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u2, _wave2d_u2, _my_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(_d_my_recv_halo, _my_recv_halo, _size_vec, cudaMemcpyHostToDevice));
+
     kernel_stepWave<<<G,B>>>(_d_wave2d_u0, _d_wave2d_u1, _d_wave2d_u2, _d_my_recv_halo, _rank, _C2);
+
+    CUDA_CHECK(cudaMemcpy(_wave2d_u0, _d_wave2d_u0, _my_size cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(_wave2d_u1, _d_wave2d_u1, _my_size cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(_wave2d_u2, _d_wave2d_u2, _my_size cudaMemcpyDeviceToHost));
+
+    CUDA_CHECK(cudaFree(_d_wave2d_u0));
+    CUDA_CHECK(cudaFree(_d_wave2d_u1));
+    CUDA_CHECK(cudaFree(_d_wave2d_u2));
 }
 
-extern "C" void updateWave(float *_d_wave2d_u0, float *_d_wave2d_u1, float *_d_wave2d_u2, int _rank){
+extern "C" void updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, int _rank){
     dim3 B(32, 32);
     dim3 G(NX/32+1, (NY/2)/32+1);
+    size_t _my_size = NX*(NY/2)*sizeof(float);
+
+    float *_d_wave2d_u0 = NULL, *_d_wave2d_u1 = NULL, *_d_wave2d_u2 = NULL;
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u0, _my_size));
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u1, _my_size));
+    CUDA_CHECK(cudaMalloc((void **)&_d_wave2d_u2, _my_size));
+
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u0, _wave2d_u0, _my_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u1, _wave2d_u1, _my_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(_d_wave2d_u2, _wave2d_u2, _my_size, cudaMemcpyHostToDevice));
+
     kernel_updateWave<<<G,B>>>(_d_wave2d_u0, _d_wave2d_u1, _d_wave2d_u2, _rank);
+
+    CUDA_CHECK(cudaMemcpy(_wave2d_u0, _d_wave2d_u0, _my_size cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(_wave2d_u1, _d_wave2d_u1, _my_size cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(_wave2d_u2, _d_wave2d_u2, _my_size cudaMemcpyDeviceToHost));    
+
+    CUDA_CHECK(cudaFree(_d_wave2d_u0));
+    CUDA_CHECK(cudaFree(_d_wave2d_u1));
+    CUDA_CHECK(cudaFree(_d_wave2d_u2));
 }
