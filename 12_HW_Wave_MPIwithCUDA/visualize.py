@@ -4,8 +4,8 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-# temp = np.loadtxt('wave2d_cudampi_map.dat').T
-temp = np.loadtxt('wave2d_map.dat').T
+temp = np.loadtxt('wave2d_cudampi_map.dat').T
+# temp = np.loadtxt('wave2d_map.dat').T
 nrows, ncols = 202, 202
 x = [i for i in range(nrows)]
 u = [i for i in range(ncols)]
