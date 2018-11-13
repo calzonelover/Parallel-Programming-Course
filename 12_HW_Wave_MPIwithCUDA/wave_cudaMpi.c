@@ -62,8 +62,8 @@ int main(int argc, char** argv){
         sync_halo(wave2d_u1, my_send_halo, my_recv_halo, rank, request, status);
         load_var_to_device(d_my_recv_halo, my_recv_halo, size_vec);
         // step and update
-        stepWave(wave2d_u0, wave2d_u1, wave2d_u2, my_recv_halo, rank, C2);
-        updateWave(wave2d_u0, wave2d_u1, wave2d_u2, rank);
+        stepWave(d_wave2d_u0, d_wave2d_u1, d_wave2d_u2, d_my_recv_halo, rank, C2);
+        updateWave(d_wave2d_u0, d_wave2d_u1, d_wave2d_u2, rank);
     }
     load_var_to_host(wave2d_u0, d_wave2d_u0, my_size);
     // collect and write file
