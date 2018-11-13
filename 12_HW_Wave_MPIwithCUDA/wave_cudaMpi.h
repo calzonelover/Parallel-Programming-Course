@@ -7,7 +7,7 @@
 #define NX 202
 #define NY 202
 #define V 0.1
-#define NT 1000
+#define NT 10
 #define A 1000.0
 #define DT 0.035
 

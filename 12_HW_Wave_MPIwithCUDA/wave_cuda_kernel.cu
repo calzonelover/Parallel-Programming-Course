@@ -36,22 +36,22 @@ __global__ void kernel_updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_
     }
 }
 
-extern "C" void alloc_var_device(float *d_var, size_t size){
-    cudaMalloc((void **)&d_var, size);
-}
+// extern "C" void alloc_var_device(float *d_var, size_t size){
+//     cudaMalloc((void **)&d_var, size);
+// }
 
-extern "C" void inject_var_to_device(float *d_var, float *h_var, size_t size){
-    cudaMalloc((void **)&d_var, size);
-    cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
-}
+// extern "C" void inject_var_to_device(float *d_var, float *h_var, size_t size){
+//     cudaMalloc((void **)&d_var, size);
+//     cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
+// }
 
-extern "C" void load_var_to_host(float *h_var, float *d_var, size_t size){
-    cudaMemcpy(h_var, d_var, size, cudaMemcpyDeviceToHost);
-}
+// extern "C" void load_var_to_host(float *h_var, float *d_var, size_t size){
+//     cudaMemcpy(h_var, d_var, size, cudaMemcpyDeviceToHost);
+// }
 
-extern "C" void load_var_to_device(float *d_var, float *h_var, size_t size){
-    cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
-}
+// extern "C" void load_var_to_device(float *d_var, float *h_var, size_t size){
+//     cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
+// }
 
 extern "C" void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2){
     dim3 B(32, 32);
