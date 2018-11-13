@@ -14,4 +14,6 @@ grid = temp.reshape((nrows, ncols))
 
 plt.imshow(grid, 
            interpolation='nearest', cmap=cm.gist_rainbow)
-plt.show()
+           
+plt.savefig("wave2d_cuda_t1000.png")
+# plt.show()
