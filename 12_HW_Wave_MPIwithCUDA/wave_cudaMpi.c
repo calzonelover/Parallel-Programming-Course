@@ -50,10 +50,10 @@ int main(int argc, char** argv){
     float *d_my_recv_halo;
     // init value
     init_variables(wave2d_u0, wave2d_u1, dx, rank);
-    inject_var_to_device(wave2d_u0, d_wave2d_u0, my_size);
-    inject_var_to_device(wave2d_u1, d_wave2d_u1, my_size);
-    inject_var_to_device(wave2d_u2, d_wave2d_u2, my_size);
-    inject_var_to_device(my_recv_halo, d_my_recv_halo, size_vec);
+    inject_var_to_device(d_wave2d_u0, wave2d_u0, my_size);
+    inject_var_to_device(d_wave2d_u1, wave2d_u1, my_size);
+    inject_var_to_device(d_wave2d_u2, wave2d_u2, my_size);
+    inject_var_to_device(d_my_recv_halo, my_recv_halo, size_vec);
     // Loop over time step
     for (unsigned int t_i=0; t_i < NT; t_i++){
         // sync halo

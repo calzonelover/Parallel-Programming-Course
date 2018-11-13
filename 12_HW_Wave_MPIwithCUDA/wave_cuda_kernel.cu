@@ -1,4 +1,4 @@
-#include "wave_cudaMPI.h"
+#include "wave_cudaMpi.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -40,7 +40,7 @@ extern "C" void alloc_var_device(float *d_var, size_t size){
     cudaMalloc((void **)&d_var, size);
 }
 
-extern "C" void inject_var_to_device(float *h_var, float *d_var, size_t size){
+extern "C" void inject_var_to_device(float *d_var, float *h_var, size_t size){
     cudaMalloc((void **)&d_var, size);
     cudaMemcpy(d_var, h_var, size, cudaMemcpyHostToDevice);
 }
