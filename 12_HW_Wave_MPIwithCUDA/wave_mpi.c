@@ -91,6 +91,18 @@ void writeFile(float *_map){
 }
 
 
+void init_variables(float *_wave2d_u0,float *_wave2d_u1, float _dx, int _rank){
+    float x_now, y_now;
+    for (unsigned int iy=0; iy<NY/2; iy++){
+        y_now = (_rank == 0)? iy*_dx - 0.5f*YMAX : iy*_dx;
+        for (unsigned int ix=0; ix<NX; ix++){
+            x_now = ix*_dx - 0.5f*XMAX;
+            _wave2d_u0[iy*NX+ix] = (float) exp(-A*(pow(x_now,2)+pow(y_now,2)));
+            _wave2d_u1[iy*NX+ix] = _wave2d_u0[iy*NX+ix];
+        }
+    }
+}
+
 
 void sync_halo(float *_wave2d_u1, float *_my_send_halo, float *_my_recv_halo, int _rank, MPI_Request _request[], MPI_Status _status[]){
     for (unsigned int i_x=0; i_x<NX; i_x++){
@@ -116,11 +128,11 @@ void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_m
         // if (t_i == 2 && rank == 0) printf("rank %d y_i %d \n", rank, y_i);
         for (unsigned int x_i=0; x_i<NX; x_i++){
             if (x_i > 0 && _global_y_i > 0 && x_i < NX-1 && _global_y_i < NY-1){
-                if (_rank == 0 && y_i == NY/2-1){
+                if ( _rank == 0 && y_i == NY/2-1){
                 _wave2d_u2[y_i*NX+x_i] = (2.0f-4.0f*_C2)*_wave2d_u1[y_i*NX+x_i] - _wave2d_u0[y_i*NX+x_i]
                                         + _C2*(_wave2d_u1[y_i*NX+(x_i+1)]+_wave2d_u1[y_i*NX+(x_i-1)]
                                         + _my_recv_halo[x_i]+_wave2d_u1[(y_i-1)*NX+x_i]);
-                } else if (_rank == 1 && y_i == 0){
+                } else if ( _rank == 1 && y_i == 0){
                 _wave2d_u2[y_i*NX+x_i] = (2.0f-4.0f*_C2)*_wave2d_u1[y_i*NX+x_i] - _wave2d_u0[y_i*NX+x_i]
                                         + _C2*(_wave2d_u1[y_i*NX+(x_i+1)]+_wave2d_u1[y_i*NX+(x_i-1)]
                                         + _wave2d_u1[(y_i+1)*NX+x_i]+_my_recv_halo[x_i]);

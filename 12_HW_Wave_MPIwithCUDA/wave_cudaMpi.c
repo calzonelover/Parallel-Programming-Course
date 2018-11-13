@@ -56,12 +56,16 @@ int main(int argc, char** argv){
     inject_var_to_device(my_recv_halo, d_my_recv_halo, size_vec);
     // Loop over time step
     for (unsigned int t_i=0; t_i < NT; t_i++){
+        // sync halo
+        load_var_to_host(wave2d_u1, d_wave2d_u1, my_size);
+        MPI_Barrier(MPI_COMM_WORLD);
         sync_halo(wave2d_u1, my_send_halo, my_recv_halo, rank, request, status);
+        load_var_to_device(d_my_recv_halo, my_recv_halo, size_vec);
+        // step and update
         stepWave(wave2d_u0, wave2d_u1, wave2d_u2, my_recv_halo, rank, C2);
-        // for (unsigned int i=0; i<NX; i++) printf("wave2d_u2[%d] = %f \n", i, wave2d_u2[i]);
         updateWave(wave2d_u0, wave2d_u1, wave2d_u2, rank);
     }
-    load_var_to_host(wave2d_u0, wave2d_u1, wave2d_u2, d_wave2d_u0, d_wave2d_u1, d_wave2d_u2, my_size);
+    load_var_to_host(wave2d_u0, d_wave2d_u0, my_size);
     // collect and write file
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Gather(wave2d_u0, NX*NY/2, MPI_FLOAT, global_map, NX*NY/2, MPI_FLOAT, 0, MPI_COMM_WORLD);
