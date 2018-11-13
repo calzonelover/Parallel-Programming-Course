@@ -7,10 +7,10 @@
 
 #define XMAX 1.0
 #define YMAX 1.0
-#define NX 256
-#define NY 256
+#define NX 202
+#define NY 202
 #define V 0.1
-#define NT 100
+#define NT 1000
 #define A 1000.0
 #define DT 0.035
 
@@ -25,6 +25,7 @@ void init_variables(float *wave2d_u0,float *wave2d_u1, float _dx, int _rank);
 void sync_halo(float *_wave2d_u1, float *_my_send_halo, float *_my_recv_halo, int _rank, MPI_Request _request[], MPI_Status _status[]);
 void stepWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, float *_my_recv_halo, int _rank, float _C2);
 void updateWave(float *_wave2d_u0, float *_wave2d_u1, float *_wave2d_u2, int _rank);
+
 
 int main(int argc, char** argv){
 	int rank, size;
@@ -61,7 +62,6 @@ int main(int argc, char** argv){
     for (unsigned int t_i=0; t_i < NT; t_i++){
         sync_halo(wave2d_u1, my_send_halo, my_recv_halo, rank, request, status);
         stepWave(wave2d_u0, wave2d_u1, wave2d_u2, my_recv_halo, rank, C2);
-        // for (unsigned int i=0; i<NX; i++) printf("wave2d_u2[%d] = %f \n", i, wave2d_u2[i]);
         updateWave(wave2d_u0, wave2d_u1, wave2d_u2, rank);
     }
     // collect and write file
@@ -73,8 +73,6 @@ int main(int argc, char** argv){
     MPI_Finalize();
     return 0;
 }
-
-
 
 void writeFile(float *_map){
 	FILE *file;
@@ -90,7 +88,6 @@ void writeFile(float *_map){
 	fclose(file);
 }
 
-
 void init_variables(float *_wave2d_u0,float *_wave2d_u1, float _dx, int _rank){
     float x_now, y_now;
     for (unsigned int iy=0; iy<NY/2; iy++){
@@ -102,7 +99,6 @@ void init_variables(float *_wave2d_u0,float *_wave2d_u1, float _dx, int _rank){
         }
     }
 }
-
 
 void sync_halo(float *_wave2d_u1, float *_my_send_halo, float *_my_recv_halo, int _rank, MPI_Request _request[], MPI_Status _status[]){
     for (unsigned int i_x=0; i_x<NX; i_x++){

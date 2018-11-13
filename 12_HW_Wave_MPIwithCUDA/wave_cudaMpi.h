@@ -2,11 +2,10 @@
 #define WAVE_CUDAMPI
 
 
-
 #define XMAX 1.0
 #define YMAX 1.0
-#define NX 256
-#define NY 256
+#define NX 202
+#define NY 202
 #define V 0.1
 #define NT 1000
 #define A 1000.0
