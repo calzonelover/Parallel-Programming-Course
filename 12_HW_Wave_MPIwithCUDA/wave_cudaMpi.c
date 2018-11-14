@@ -45,28 +45,13 @@ int main(int argc, char** argv){
     my_recv_halo = malloc(size_vec);
     my_send_halo = malloc(size_vec);
 
-    // float *d_wave2d_u0, *d_wave2d_u1, *d_wave2d_u2;
-    // float *d_my_recv_halo;
-
     // init value
     init_variables(wave2d_u0, wave2d_u1, dx, rank);
-    // inject_var_to_device(d_wave2d_u0, wave2d_u0, my_size);
-    // inject_var_to_device(d_wave2d_u1, wave2d_u1, my_size);
-    // alloc_var_device(d_wave2d_u2, my_size);
-    // alloc_var_device(d_my_recv_halo, size_vec);
-    // Loop over time step
     for (unsigned int t_i=0; t_i < NT; t_i++){
-        // sync halo
-        // load_var_to_host(wave2d_u1, d_wave2d_u1, my_size);
-        // MPI_Barrier(MPI_COMM_WORLD);
         sync_halo(wave2d_u1, my_send_halo, my_recv_halo, rank, request, status);
-        // load_var_to_device(d_my_recv_halo, my_recv_halo, size_vec);
-        // step and update
         stepWave(wave2d_u0, wave2d_u1, wave2d_u2, my_recv_halo, rank, C2);
         updateWave(wave2d_u0, wave2d_u1, wave2d_u2, rank);
     }
-    // MPI_Barrier(MPI_COMM_WORLD);
-    // load_var_to_host(wave2d_u0, d_wave2d_u0, my_size);
     // collect and write file
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Gather(wave2d_u0, NX*NY/2, MPI_FLOAT, global_map, NX*NY/2, MPI_FLOAT, 0, MPI_COMM_WORLD);

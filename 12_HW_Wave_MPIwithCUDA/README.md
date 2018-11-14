@@ -16,7 +16,10 @@ Found that ordinary MPI produce a satisfied result we could see in t_0 and t_100
 </p>
 
 ### 2) MPI with CUDA
-All of the function seems to perform well and it also contains no error but I have no idea why it remain the initial state along the time as given picture
+Performing the same logic and write function "stepWave" and "updateWave" in cuda file rather than write function in c file and partially compile by setting it available external call from MPI program the results at time t_100 and t_1000 has shown in below
+<p align="center">
+<img src="wave2d_cuda_t100.png" width="500px" >
+</p>
 <p align="center">
 <img src="wave2d_cuda_t1000.png" width="500px" >
 </p>
